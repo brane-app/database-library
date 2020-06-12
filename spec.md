@@ -18,7 +18,7 @@ Read a single User of ID `ID` and return it, if it exists. `exists` should speci
 
 Write or update a single Content `content` in a database. This should work the same way as WriteUser
 
-##### `ReadSingleContent(ID string) (content Content, exist bool, err error)`
+##### `ReadSingleContent(ID string) (content Content, exists bool, err error)`
 
 Read a single User of ID `ID` and return it, if it exists. `exists` should specify whether or not anything was read.
 
