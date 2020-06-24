@@ -1,11 +1,9 @@
 package monkebase
 
-type User interface{}
-
-func WriteUser(user User) (err error) {
-    return
+func WriteUser(user interface{}) (err error) {
+	return
 }
 
-func ReadSingleUser(ID string) (user User, exists bool, err error)  {
-    return
+func ReadSingleUser(ID string) (user interface{}, exists bool, err error) {
+	return
 }

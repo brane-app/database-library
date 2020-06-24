@@ -1,19 +1,18 @@
 package monkebase
 
-type Content interface{}
-
-func WriteContent(content Content) (err error) {
+func WriteContent(content interface{}) (err error) {
+	_, err = database.Query("")
 	return
 }
 
-func ReadSingleContent(ID string) (content Content, exists bool, err error) {
+func ReadSingleContent(ID string) (content interface{}, exists bool, err error) {
 	return
 }
 
-func ReadManyContent(index, limit int) (content []Content, size int, err error) {
+func ReadManyContent(index, limit int) (content []interface{}, size int, err error) {
 	return
 }
 
-func ReadAuthorContent(ID string, index, limit int) (content []Content, size, err error) {
+func ReadAuthorContent(ID string, index, limit int) (content []interface{}, size, err error) {
 	return
 }
