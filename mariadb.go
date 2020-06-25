@@ -10,7 +10,7 @@ import (
 var (
 	database *sql.DB
 	tables   map[string]string = map[string]string{
-		"content": `
+		CONTENT_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			file_url VARCHAR(63) NOT NULL,
 			author VARCHAR(63) NOT NULL,
@@ -25,26 +25,28 @@ var (
 			featurable BOOLEAN,
 			removed BOOLEAN,
 			nsfw BOOLEAN`,
-		"users": `
+		USER_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			nick VARCHAR(63) NOT NULL,
 			bio VARCHAR(255),
 			subscriber_count BIGINT UNSIGNED NOT NULL,
 			subscription_count BIGINT UNSIGNED NOT NULL,
 			created BIGINT UNSIGNED NOT NULL`,
-		"tags": `
+		TAG_TABLE: `
 			id CHAR(36) NOT NULL,
 			tag CHAR(63) NOT NULL,
 			CONSTRAINT no_dupe_tags UNIQUE(id, tag)`,
-		"auth": `
+		AUTH_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			hash BINARY(60)`,
 	}
 )
 
 const (
-	USER_TABLE    = "user"
+	USER_TABLE    = "users"
 	CONTENT_TABLE = "content"
+	TAG_TABLE     = "tags"
+	AUTH_TABLE    = "auth"
 )
 
 func connect(address string) {
