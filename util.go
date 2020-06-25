@@ -28,5 +28,18 @@ func makeSQLInsertable(table string, it map[string]interface{}) (statement strin
 	return
 }
 
+func manyParamString(size int) (param_string string) {
+	param_string = strings.Join(strings.Split(strings.Repeat("?", size), ""), ", ")
+	return
+}
+
+func interfaceStrings(them ...string) (faces []interface{}) {
+	faces = make([]interface{}, len(them))
+
+	var index int
+	for index, _ = range them {
+		faces[index] = them[index]
+	}
+
 	return
 }
