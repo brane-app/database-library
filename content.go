@@ -29,6 +29,11 @@ func ReadAuthorContent(ID string, index, limit int) (content []interface{}, size
 }
 
 func setTags(ID string, tags []string) (err error) {
+	if len(tags) < 1 {
+		err = dropTags(ID)
+		return
+	}
+
 	var p_string = manyParamString(len(tags))
 	var statement string = "DELETE FROM " + TAG_TABLE + " WHERE id=? AND tag NOT IN (" + p_string + ")"
 	var faces []interface{} = append(
@@ -49,5 +54,10 @@ func setTags(ID string, tags []string) (err error) {
 		}
 	}
 
+	return
+}
+
+func dropTags(ID string) (err error) {
+	_, err = database.Query("DELETE FROM "+TAG_TABLE+" WHERE id=?", ID)
 	return
 }
