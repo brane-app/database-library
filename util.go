@@ -1,7 +1,6 @@
 package monkebase
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -24,12 +23,10 @@ func getSQLParams(it map[string]interface{}) (keys []string, values []interface{
 func makeSQLInsertable(table string, it map[string]interface{}) (statement string, values []interface{}) {
 	var keys []string
 	keys, values = getSQLParams(it)
+	statement = "REPLACE INTO " + table + " (" + strings.Join(keys, ", ") + ") VALUES " + "(" + manyParamString(len(keys)) + ")"
 
-	var q_marks []string = strings.Split(strings.Repeat("?", len(keys)), "")
-	statement = fmt.Sprintf(
-		"REPLACE INTO %s (%s) VALUES (%s)",
-		table, strings.Join(keys, ", "), strings.Join(q_marks, ", "),
-	)
+	return
+}
 
 	return
 }
