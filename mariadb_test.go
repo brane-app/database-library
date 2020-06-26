@@ -10,7 +10,27 @@ var (
 	CONNECTION string = os.Getenv("MONKEBASE_CONNECTION")
 )
 
-func TestMain(main *testing.T) {
+type testWritable struct {
+	Data map[string]interface{}
+}
+
+func (writable testWritable) Map() (data map[string]interface{}) {
+	return writable.Data
+}
+
+func mapCopy(source map[string]interface{}) (copy map[string]interface{}) {
+	copy = map[string]interface{}{}
+
+	var key string
+	var value interface{}
+	for key, value = range source {
+		copy[key] = value
+	}
+
+	return
+}
+
+func TestMain(main *testing.M) {
 	connect(CONNECTION)
 
 	var table string
@@ -19,9 +39,14 @@ func TestMain(main *testing.T) {
 	}
 
 	create()
+	if database == nil {
+		panic("database nil after being set!")
+	}
+
+	os.Exit(main.Run())
 }
 
-func Test_connect(test *testing.T) {
+func _Test_connect(test *testing.T) {
 	defer func(test *testing.T) {
 		var recovered interface{}
 
