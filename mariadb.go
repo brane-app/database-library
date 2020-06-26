@@ -13,7 +13,7 @@ var (
 		CONTENT_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			file_url VARCHAR(63) NOT NULL,
-			author VARCHAR(63) NOT NULL,
+			author CHAR(36) NOT NULL,
 			mime VARCHAR(63) NOT NULL,
 			like_count BIGINT UNSIGNED NOT NULL,
 			dislike_count BIGINT UNSIGNED NOT NULL,
@@ -34,7 +34,7 @@ var (
 			created BIGINT UNSIGNED NOT NULL`,
 		TAG_TABLE: `
 			id CHAR(36) NOT NULL,
-			tag CHAR(63) NOT NULL,
+			tag VARCHAR(63) NOT NULL,
 			CONSTRAINT no_dupe_tags UNIQUE(id, tag)`,
 		AUTH_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
