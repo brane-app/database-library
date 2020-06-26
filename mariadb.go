@@ -35,6 +35,7 @@ var (
 		TAG_TABLE: `
 			id CHAR(36) NOT NULL,
 			tag VARCHAR(63) NOT NULL,
+			created BIGINT UNSIGNED NOT NULL,
 			CONSTRAINT no_dupe_tags UNIQUE(id, tag)`,
 		AUTH_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,

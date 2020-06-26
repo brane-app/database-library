@@ -1,5 +1,9 @@
 package monkebase
 
+import (
+	"time"
+)
+
 func WriteContent(content map[string]interface{}) (err error) {
 	if err = setTags(content["id"].(string), content["tags"].([]string)); err != nil {
 		return
@@ -44,11 +48,12 @@ func setTags(ID string, tags []string) (err error) {
 		return
 	}
 
-	statement = "REPLACE INTO " + TAG_TABLE + " (id, tag) VALUES (?, ?)"
+	statement = "REPLACE INTO " + TAG_TABLE + " (id, tag, created) VALUES (?, ?, ?)"
+	var now int64 = time.Now().Unix()
 
 	var tag interface{}
 	for _, tag = range tags {
-		if _, err = database.Query(statement, ID, tag); err != nil {
+		if _, err = database.Query(statement, ID, tag, now); err != nil {
 			break
 		}
 	}
