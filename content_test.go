@@ -30,6 +30,10 @@ func Test_WriteContent(test *testing.T) {
 		map[string]interface{}{
 			"tags": []string{},
 		},
+		map[string]interface{}{
+			"id":   "0",
+			"mime": "' or 1=1; DROP TABLE users",
+		},
 	}
 
 	var key string
@@ -44,7 +48,7 @@ func Test_WriteContent(test *testing.T) {
 			copy[key] = value
 		}
 
-		if err = WriteContent(testWritable{Data: copy}); err != nil {
+		if err = WriteContent(copy); err != nil {
 			test.Fatal(err)
 		}
 
@@ -73,7 +77,7 @@ func Test_WriteContent_err(test *testing.T) {
 			copy[key] = value
 		}
 
-		if err = WriteContent(testWritable{Data: copy}); err == nil {
+		if err = WriteContent(copy); err == nil {
 			test.Errorf("data %+v produced no error!", copy)
 		}
 	}
@@ -81,7 +85,7 @@ func Test_WriteContent_err(test *testing.T) {
 	copy = mapCopy(writableContent)
 	delete(copy, "file_url")
 
-	if err = WriteContent(testWritable{Data: copy}); err == nil {
+	if err = WriteContent(copy); err == nil {
 		test.Errorf("data %+v produced no error!", copy)
 	}
 }

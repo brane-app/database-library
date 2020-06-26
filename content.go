@@ -1,16 +1,15 @@
 package monkebase
 
-func WriteContent(content Mappable) (err error) {
-	var mapped map[string]interface{} = content.Map()
-	if err = setTags(mapped["id"].(string), mapped["tags"].([]string)); err != nil {
+func WriteContent(content map[string]interface{}) (err error) {
+	if err = setTags(content["id"].(string), content["tags"].([]string)); err != nil {
 		return
 	}
 
-	delete(mapped, "tags")
+	delete(content, "tags")
 
 	var query string
 	var values []interface{}
-	query, values = makeSQLInsertable(CONTENT_TABLE, mapped)
+	query, values = makeSQLInsertable(CONTENT_TABLE, content)
 
 	_, err = database.Query(query, values...)
 	return
