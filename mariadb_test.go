@@ -33,9 +33,13 @@ func mapCopy(source map[string]interface{}) (copy map[string]interface{}) {
 func TestMain(main *testing.M) {
 	connect(CONNECTION)
 
+	var err error
+
 	var table string
 	for table = range tables {
-		database.Query("DROP TABLE IF EXISTS ?", table)
+		if _, err = database.Query("DROP TABLE IF EXISTS " + table); err != nil {
+			panic(err)
+		}
 	}
 
 	create()
