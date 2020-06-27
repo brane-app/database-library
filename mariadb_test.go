@@ -1,7 +1,7 @@
 package monkebase
 
 import (
-	"database/sql"
+	"github.com/jmoiron/sqlx"
 	"os"
 	"testing"
 )
@@ -59,8 +59,8 @@ func _Test_connect(test *testing.T) {
 		}
 	}(test)
 
-	var existing *sql.DB = database
-	defer func(existing *sql.DB) { database = existing }(existing)
+	var existing *sqlx.DB = database
+	defer func(existing *sqlx.DB) { database = existing }(existing)
 
 	connect("foobar")
 }

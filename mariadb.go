@@ -1,14 +1,14 @@
 package monkebase
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
-	database *sql.DB
+	database *sqlx.DB
 	tables   map[string]string = map[string]string{
 		CONTENT_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
@@ -52,7 +52,7 @@ const (
 
 func connect(address string) {
 	var err error
-	if database, err = sql.Open("mysql", address); err != nil {
+	if database, err = sqlx.Open("mysql", address); err != nil {
 		panic(err)
 	}
 
