@@ -5,15 +5,17 @@ import (
 )
 
 func WriteContent(content map[string]interface{}) (err error) {
-	if err = setTags(content["id"].(string), content["tags"].([]string)); err != nil {
+	var copied map[string]interface{} = mapCopy(content)
+
+	if err = setTags(copied["id"].(string), copied["tags"].([]string)); err != nil {
 		return
 	}
 
-	delete(content, "tags")
+	delete(copied, "tags")
 
 	var query string
 	var values []interface{}
-	query, values = makeSQLInsertable(CONTENT_TABLE, content)
+	query, values = makeSQLInsertable(CONTENT_TABLE, copied)
 
 	_, err = database.Query(query, values...)
 	return
