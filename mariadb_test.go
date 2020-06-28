@@ -11,12 +11,20 @@ var (
 	CONNECTION string = os.Getenv("MONKEBASE_CONNECTION")
 )
 
-type testWritable struct {
-	Data map[string]interface{}
-}
+func mapMod(source map[string]interface{}, mods ...map[string]interface{}) (modified map[string]interface{}) {
+	modified = mapCopy(source)
 
-func (writable testWritable) Map() (data map[string]interface{}) {
-	return writable.Data
+	var key string
+	var value interface{}
+
+	var mod map[string]interface{}
+	for _, mod = range mods {
+		for key, value = range mod {
+			modified[key] = value
+		}
+	}
+
+	return
 }
 
 func TestMain(main *testing.M) {
