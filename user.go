@@ -1,5 +1,15 @@
 package monkebase
 
+import (
+	"github.com/jmoiron/sqlx"
+)
+
+/**
+ * Write some user `user` into USER_TABLE
+ * Uses 1 query
+ * 		write user: 	REPLACE INTO CONTENT_TABLE (keys...) VALUES (values...)
+ * Returns error, if any
+ */
 func WriteUser(user map[string]interface{}) (err error) {
 	var statement string
 	var values []interface{}
