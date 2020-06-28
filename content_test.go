@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"testing"
+	"time"
 )
 
 var (
@@ -20,7 +21,7 @@ var (
 		"repub_count":   3,
 		"view_count":    400,
 		"comment_count": 4,
-		"created":       1593108723,
+		"created":       time.Now().Unix(),
 		"featured":      false,
 		"featurable":    true,
 		"removed":       false,
@@ -50,6 +51,22 @@ func contentOK(test *testing.T, data map[string]interface{}, have Content) {
 	}
 }
 
+func mapMod(source map[string]interface{}, mods ...map[string]interface{}) (modified map[string]interface{}) {
+	modified = mapCopy(source)
+
+	var key string
+	var value interface{}
+
+	var mod map[string]interface{}
+	for _, mod = range mods {
+		for key, value = range mod {
+			modified[key] = value
+		}
+	}
+
+	return
+}
+
 func Test_WriteContent(test *testing.T) {
 	var mods []map[string]interface{} = []map[string]interface{}{
 		map[string]interface{}{},
@@ -62,22 +79,13 @@ func Test_WriteContent(test *testing.T) {
 		},
 	}
 
-	var key string
-	var value interface{}
 	var err error
-
-	var mod, copy map[string]interface{}
+	var mod map[string]interface{}
 	for _, mod = range mods {
-		copy = mapCopy(writableContent)
-
-		for key, value = range mod {
-			copy[key] = value
-		}
-
-		if err = WriteContent(copy); err != nil {
+		mod = mapMod(writableContent, mod)
+		if err = WriteContent(mod); err != nil {
 			test.Fatal(err)
 		}
-
 	}
 }
 
@@ -91,28 +99,20 @@ func Test_WriteContent_err(test *testing.T) {
 		},
 	}
 
-	var key string
-	var value interface{}
+	var mod map[string]interface{}
+	mod = mapCopy(writableContent)
+	delete(mod, "file_url")
+
 	var err error
-
-	var mod, copy map[string]interface{}
-	for _, mod = range mods {
-		copy = mapCopy(writableContent)
-
-		for key, value = range mod {
-			copy[key] = value
-		}
-
-		if err = WriteContent(copy); err == nil {
-			test.Errorf("data %+v produced no error!", copy)
-		}
+	if err = WriteContent(mod); err == nil {
+		test.Errorf("data %+v produced no error!", mod)
 	}
 
-	copy = mapCopy(writableContent)
-	delete(copy, "file_url")
-
-	if err = WriteContent(copy); err == nil {
-		test.Errorf("data %+v produced no error!", copy)
+	for _, mod = range mods {
+		mod = mapMod(writableContent, mod)
+		if err = WriteContent(mod); err == nil {
+			test.Errorf("data %+v produced no error!", mod)
+		}
 	}
 }
 
