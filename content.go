@@ -63,7 +63,37 @@ func ReadSingleContent(ID string) (content Content, exists bool, err error) {
 	return
 }
 
-func ReadManyContent(index, limit int) (content []interface{}, size int, err error) {
+func ReadManyContent(offset, count int) (content []Content, size int, err error) {
+	var statement string = "SELECT * FROM " + CONTENT_TABLE + " ORDER BY created DESC LIMIT ?, ?"
+	var rows *sqlx.Rows
+	if rows, err = database.Queryx(statement, offset, count); err != nil || rows == nil {
+		return
+	}
+
+	defer rows.Close()
+
+	var ids []string = make([]string, count)
+	content = make([]Content, count)
+	size = 0
+
+	for rows.Next() {
+		rows.StructScan(&content[size])
+		ids[size] = content[size].ID
+		size++
+	}
+
+	content = content[:size]
+
+	var tags map[string][]string
+	if tags, err = getManyTags(ids); err != nil {
+		return
+	}
+
+	var index int
+	for index, _ = range content {
+		content[index].Tags = tags[content[index].ID]
+	}
+
 	return
 }
 
@@ -92,6 +122,33 @@ func getTags(ID string) (tags []string, err error) {
 		}
 
 		tags = append(tags, tag)
+	}
+
+	return
+}
+
+func getManyTags(IDs []string) (tags map[string][]string, err error) {
+	if len(IDs) < 1 {
+		return
+	}
+
+	var statement string = "SELECT id, tag FROM " + TAG_TABLE + " WHERE id IN (" + manyParamString("?", len(IDs)) + ")"
+
+	var rows *sql.Rows
+	if rows, err = database.Query(statement, interfaceStrings(IDs...)...); err != nil || rows == nil {
+		return
+	}
+
+	defer rows.Close()
+	tags = make(map[string][]string, len(IDs))
+
+	var id, tag string
+	for rows.Next() {
+		if err = rows.Scan(&id, &tag); err != nil {
+			break
+		}
+
+		tags[id] = append(tags[id], tag)
 	}
 
 	return

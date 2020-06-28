@@ -51,17 +51,19 @@ func contentOK(test *testing.T, data map[string]interface{}, have Content) {
 	}
 }
 
-func mapMod(source map[string]interface{}, mods ...map[string]interface{}) (modified map[string]interface{}) {
-	modified = mapCopy(source)
+func populate(many int) (err error) {
+	var modified map[string]interface{}
 
-	var key string
-	var value interface{}
+	for many != 0 {
+		modified = mapCopy(writableContent)
+		modified["id"] = "many_" + strconv.Itoa(many)
+		modified["created"] = time.Now().Unix() + int64(100000*many)
 
-	var mod map[string]interface{}
-	for _, mod = range mods {
-		for key, value = range mod {
-			modified[key] = value
+		if err = WriteContent(modified); err != nil {
+			break
 		}
+
+		many--
 	}
 
 	return
@@ -179,5 +181,67 @@ func Test_ReadSingleContent_NotExists(test *testing.T) {
 
 	if exists {
 		test.Errorf("Query for nonexisting id got %+v", content)
+	}
+}
+
+func Test_ReadManyContent(test *testing.T) {
+	var err error
+	var many int = 31
+	if err = populate(many); err != nil {
+		test.Fatal(err)
+	}
+
+	var offset, count int = 4, 15
+
+	var content []Content
+	var size int
+	if content, size, err = ReadManyContent(offset, count); err != nil {
+		test.Fatal(err)
+	}
+
+	if size != count {
+		test.Errorf("did not get enough posts! have: %d, want: %d", size, count)
+	}
+
+	if len(content) != size {
+		test.Errorf("content size %d (%+v) does not match size %d!", len(content), content, size)
+	}
+
+	var index, suffix int
+	var single Content
+	for index, single = range content {
+		suffix = size - index + 12
+		if single.ID != "many_"+strconv.Itoa(suffix) {
+			test.Errorf("ID %s does not have suffix %d!", single.ID, suffix)
+		}
+	}
+}
+func Test_ReadManyContent_Fewer(test *testing.T) {
+	var err error
+	if _, err = database.Query("DROP TABLE IF EXISTS " + CONTENT_TABLE); err != nil {
+		test.Fatal(err)
+	}
+
+	create()
+
+	var many int = 12
+	if err = populate(many); err != nil {
+		test.Fatal(err)
+	}
+
+	var offset, count int = 4, 15
+
+	var content []Content
+	var size int
+	if content, size, err = ReadManyContent(offset, count); err != nil {
+		test.Fatal(err)
+	}
+
+	if size != many-offset {
+		test.Errorf("Got too many posts! have: %d, want: %d", size, many-offset)
+	}
+
+	if len(content) != size {
+		test.Errorf("content size %d (%+v) does not match size %d!", len(content), content, size)
 	}
 }
