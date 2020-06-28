@@ -166,3 +166,18 @@ func Test_ReadSingleContent_ManyTags(test *testing.T) {
 
 	contentOK(test, modified, content)
 }
+
+func Test_ReadSingleContent_NotExists(test *testing.T) {
+	var id string = uuid.New().String()
+
+	var content Content
+	var exists bool
+	var err error
+	if content, exists, err = ReadSingleContent(id); err != nil {
+		test.Fatal(err)
+	}
+
+	if exists {
+		test.Errorf("Query for nonexisting id got %+v", content)
+	}
+}

@@ -44,13 +44,15 @@ func ReadSingleContent(ID string) (content Content, exists bool, err error) {
 		return
 	}
 
-	rows.Next()
+	if exists = rows.Next(); !exists {
+		return
+	}
+
 	if err = rows.StructScan(&content); err != nil {
 		return
 	}
 
 	content.Tags, err = getTags(ID)
-	exists = true
 
 	return
 }
