@@ -35,22 +35,28 @@ var (
 			subscription_count BIGINT UNSIGNED NOT NULL,
 			post_count BIGINT UNSIGNED NOT NULL,
 			created BIGINT UNSIGNED NOT NULL`,
+		AUTH_TABLE: `
+			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
+			hash BINARY(60)`,
 		TAG_TABLE: `
 			id CHAR(36) NOT NULL,
 			tag VARCHAR(63) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
 			CONSTRAINT no_dupe_tags UNIQUE(id, tag)`,
-		AUTH_TABLE: `
-			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
-			hash BINARY(60)`,
+		SUBSCRIPTION_TABLE: `
+			subscriber CHAR(36) NOT NULL,
+			subscription CHAR(36) NOT NULL,
+			created BIGINT UNSIGNED NOT NULL,
+			CONSTRAINT no_dupe_subscriptions UNIQUE(subscriber, subscription)`,
 	}
 )
 
 const (
-	USER_TABLE    = "users"
-	CONTENT_TABLE = "content"
-	TAG_TABLE     = "tags"
-	AUTH_TABLE    = "auth"
+	USER_TABLE         = "users"
+	CONTENT_TABLE      = "content"
+	AUTH_TABLE         = "auth"
+	TAG_TABLE          = "tags"
+	SUBSCRIPTION_TABLE = "subs"
 )
 
 func connect(address string) {
