@@ -3,6 +3,7 @@ package monkebase
 import (
 	"github.com/jmoiron/sqlx"
 
+	"database/sql"
 	"time"
 )
 
@@ -26,7 +27,10 @@ func WriteContent(content map[string]interface{}) (err error) {
 	var values []interface{}
 	statement, values = makeSQLInsertable(CONTENT_TABLE, copied)
 
-	_, err = database.Query(statement, values...)
+	var rows *sql.Rows
+	if rows, err = database.Query(statement, values...); rows != nil {
+		rows.Close()
+	}
 	return
 }
 
@@ -40,9 +44,11 @@ func ReadSingleContent(ID string) (content Content, exists bool, err error) {
 	var statement string = "SELECT * FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
 
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID); err != nil {
+	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
 		return
 	}
+
+	defer rows.Close()
 
 	if exists = rows.Next(); !exists {
 		return
@@ -73,9 +79,11 @@ func ReadAuthorContent(ID string, index, limit int) (content []interface{}, size
 func getTags(ID string) (tags []string, err error) {
 	var statement string = "SELECT tag FROM " + TAG_TABLE + " WHERE id=?"
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID); err != nil {
+	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
 		return
 	}
+
+	defer rows.Close()
 
 	var tag string
 	for rows.Next() {
@@ -110,10 +118,12 @@ func setTags(ID string, tags []string) (err error) {
 		interfaceStrings(tags...)...,
 	)
 
-	if _, err = database.Query(statement, faces...); err != nil {
-		panic(statement)
+	var rows *sql.Rows
+	if rows, err = database.Query(statement, faces...); err != nil || rows == nil {
 		return
 	}
+
+	defer rows.Close()
 
 	var now int64 = time.Now().Unix()
 	var insertable []interface{} = make([]interface{}, length*3)
@@ -137,6 +147,9 @@ func setTags(ID string, tags []string) (err error) {
  * 		DELETE FROM TAG_TABLE WHERE id=ID
  */
 func dropTags(ID string) (err error) {
-	_, err = database.Query("DELETE FROM "+TAG_TABLE+" WHERE id=?", ID)
+	var rows *sql.Rows
+	if rows, err = database.Query("DELETE FROM "+TAG_TABLE+" WHERE id=?", ID); rows != nil {
+		rows.Close()
+	}
 	return
 }
