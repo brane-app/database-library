@@ -17,3 +17,14 @@ type Content struct {
 	Removed      bool     `db:"removed"`
 	NSFW         bool     `db:"nsfw"`
 }
+
+type User struct {
+	ID                string `db:"id"`
+	Email             string `db:"email"`
+	Nick              string `db:"nick"`
+	Bio               string `db:"bio"`
+	SubscriberCount   int    `db:"subscriber_count"`
+	SubscriptionCount int    `db:"subscription_count"`
+	PostCount         int    `db:"post_count"`
+	Created           int64  `db:"created"`
+}
