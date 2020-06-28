@@ -2,6 +2,7 @@ package monkebase
 
 import (
 	"github.com/jmoiron/sqlx"
+
 	"os"
 	"testing"
 )
@@ -16,18 +17,6 @@ type testWritable struct {
 
 func (writable testWritable) Map() (data map[string]interface{}) {
 	return writable.Data
-}
-
-func mapCopy(source map[string]interface{}) (copy map[string]interface{}) {
-	copy = map[string]interface{}{}
-
-	var key string
-	var value interface{}
-	for key, value = range source {
-		copy[key] = value
-	}
-
-	return
 }
 
 func TestMain(main *testing.M) {
