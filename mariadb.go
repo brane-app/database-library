@@ -1,8 +1,9 @@
 package monkebase
 
 import (
-	"fmt"
 	"github.com/jmoiron/sqlx"
+
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
