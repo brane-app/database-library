@@ -22,11 +22,11 @@ func WriteContent(content map[string]interface{}) (err error) {
 
 	delete(copied, "tags")
 
-	var query string
+	var statement string
 	var values []interface{}
-	query, values = makeSQLInsertable(CONTENT_TABLE, copied)
+	statement, values = makeSQLInsertable(CONTENT_TABLE, copied)
 
-	_, err = database.Query(query, values...)
+	_, err = database.Query(statement, values...)
 	return
 }
 
