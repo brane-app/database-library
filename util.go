@@ -1,6 +1,7 @@
 package monkebase
 
 import (
+	"database/sql"
 	"strings"
 )
 
@@ -45,6 +46,18 @@ func interfaceStrings(them ...string) (faces []interface{}) {
 	var index int
 	for index, _ = range them {
 		faces[index] = them[index]
+	}
+
+	return
+}
+
+func mapCopy(source map[string]interface{}) (copy map[string]interface{}) {
+	copy = map[string]interface{}{}
+
+	var key string
+	var value interface{}
+	for key, value = range source {
+		copy[key] = value
 	}
 
 	return
