@@ -23,13 +23,19 @@ func getSQLParams(it map[string]interface{}) (keys []string, values []interface{
 func makeSQLInsertable(table string, it map[string]interface{}) (statement string, values []interface{}) {
 	var keys []string
 	keys, values = getSQLParams(it)
-	statement = "REPLACE INTO " + table + " (" + strings.Join(keys, ", ") + ") VALUES " + "(" + manyParamString(len(keys)) + ")"
+	statement = "REPLACE INTO " + table + " (" + strings.Join(keys, ", ") + ") VALUES " + "(" + manyParamString("?", len(keys)) + ")"
 
 	return
 }
 
-func manyParamString(size int) (param_string string) {
-	param_string = strings.Join(strings.Split(strings.Repeat("?", size), ""), ", ")
+func manyParamString(param string, size int) (param_string string) {
+	var param_slice []string = make([]string, size)
+	for size != 0 {
+		size--
+		param_slice[size] = param
+	}
+
+	param_string = strings.Join(param_slice, ", ")
 	return
 }
 
