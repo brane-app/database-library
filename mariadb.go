@@ -30,7 +30,7 @@ var (
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			email VARCHAR(63) NOT NULL,
 			nick VARCHAR(63) NOT NULL,
-			bio VARCHAR(255),
+			bio VARCHAR(255) NOT NULL,
 			subscriber_count BIGINT UNSIGNED NOT NULL,
 			subscription_count BIGINT UNSIGNED NOT NULL,
 			post_count BIGINT UNSIGNED NOT NULL,
