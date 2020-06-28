@@ -28,10 +28,12 @@ var (
 			nsfw BOOLEAN`,
 		USER_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
+			email VARCHAR(63) NOT NULL,
 			nick VARCHAR(63) NOT NULL,
 			bio VARCHAR(255),
 			subscriber_count BIGINT UNSIGNED NOT NULL,
 			subscription_count BIGINT UNSIGNED NOT NULL,
+			post_count BIGINT UNSIGNED NOT NULL,
 			created BIGINT UNSIGNED NOT NULL`,
 		TAG_TABLE: `
 			id CHAR(36) NOT NULL,
