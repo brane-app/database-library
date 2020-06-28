@@ -117,28 +117,28 @@ func Test_WriteContent_err(test *testing.T) {
 }
 
 func Test_ReadSingleContent(test *testing.T) {
-	var copy map[string]interface{} = mapCopy(writableContent)
-	copy["id"] = uuid.New().String()
+	var modified map[string]interface{} = mapCopy(writableContent)
+	modified["id"] = uuid.New().String()
 
-	WriteContent(copy)
+	WriteContent(modified)
 
 	var content Content = Content{}
 	var exists bool
 	var err error
-	if content, exists, err = ReadSingleContent(copy["id"].(string)); err != nil {
+	if content, exists, err = ReadSingleContent(modified["id"].(string)); err != nil {
 		test.Fatal(err)
 	}
 
 	if !exists {
-		test.Errorf("content of id %s does not exist!", copy["id"])
+		test.Errorf("content of id %s does not exist!", modified["id"])
 	}
 
-	contentOK(test, copy, content)
+	contentOK(test, modified, content)
 }
 
 func Test_ReadSingleContent_ManyTags(test *testing.T) {
-	var copy map[string]interface{} = mapCopy(writableContent)
-	copy["id"] = uuid.New().String()
+	var modified map[string]interface{} = mapCopy(writableContent)
+	modified["id"] = uuid.New().String()
 
 	var count int = 255
 	var tags []string = make([]string, count)
@@ -149,20 +149,20 @@ func Test_ReadSingleContent_ManyTags(test *testing.T) {
 		index++
 	}
 
-	copy["tags"] = tags
+	modified["tags"] = tags
 
-	WriteContent(copy)
+	WriteContent(modified)
 
 	var content Content = Content{}
 	var exists bool
 	var err error
-	if content, exists, err = ReadSingleContent(copy["id"].(string)); err != nil {
+	if content, exists, err = ReadSingleContent(modified["id"].(string)); err != nil {
 		test.Fatal(err)
 	}
 
 	if !exists {
-		test.Errorf("content of id %s does not exist!", copy["id"])
+		test.Errorf("content of id %s does not exist!", modified["id"])
 	}
 
-	contentOK(test, copy, content)
+	contentOK(test, modified, content)
 }
