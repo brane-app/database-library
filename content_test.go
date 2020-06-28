@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 
 	"sort"
+	"strconv"
 	"testing"
 )
 
@@ -139,12 +140,12 @@ func Test_ReadSingleContent_ManyTags(test *testing.T) {
 	var copy map[string]interface{} = mapCopy(writableContent)
 	copy["id"] = uuid.New().String()
 
-	var count int = 63
+	var count int = 255
 	var tags []string = make([]string, count)
 
 	var index int = 0
 	for index != count {
-		tags[index] = "some_" + string(index)
+		tags[index] = "some_" + strconv.Itoa(index)
 		index++
 	}
 
