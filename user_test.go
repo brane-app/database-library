@@ -20,12 +20,22 @@ var (
 	}
 )
 
+func userOK(test *testing.T, data map[string]interface{}, have User) {
+	if data["id"].(string) != have.ID {
+		test.Errorf("User ID mismatch! have: %s, want: %s", have.ID, data["id"])
+	}
+
+	if data["bio"].(string) != have.Bio {
+		test.Errorf("User bio mismatch! have: %s, want: %s", have.Bio, data["bio"])
+	}
+}
+
 func Test_WriteUser(test *testing.T) {
 	var mods []map[string]interface{} = []map[string]interface{}{
 		map[string]interface{}{},
 		map[string]interface{}{
 			"id":  uuid.New().String(),
-			"bio": "' or 1=1; DROP TABLE content",
+			"bio": "' or 1=1; DROP TABLE user",
 		},
 	}
 
@@ -67,4 +77,39 @@ func Test_WriteUser_err(test *testing.T) {
 		}
 	}
 
+}
+
+func Test_ReadSingleUser(test *testing.T) {
+	var modified map[string]interface{} = mapCopy(writableUser)
+	modified["id"] = uuid.New().String()
+
+	WriteUser(modified)
+
+	var user User
+	var exists bool
+	var err error
+	if user, exists, err = ReadSingleUser(modified["id"].(string)); err != nil {
+		test.Fatal(err)
+	}
+
+	if !exists {
+		test.Errorf("user of id %s does not exist!", modified["id"])
+	}
+
+	userOK(test, modified, user)
+}
+
+func Test_ReadSingleUser_NotExists(test *testing.T) {
+	var id string = uuid.New().String()
+
+	var user User
+	var exists bool
+	var err error
+	if user, exists, err = ReadSingleUser(id); err != nil {
+		test.Fatal(err)
+	}
+
+	if exists {
+		test.Errorf("Query for nonexisting id got %+v", user)
+	}
 }
