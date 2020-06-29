@@ -72,3 +72,11 @@ Revoke a token belonging to user of ID `ID`. If they have no token, or no such u
 ##### `RevokeSecretOf(ID string) (err error)`
 
 Revoke a secret belonging to user of ID `ID`. If they have no secret, or no such user exists, do nothing
+
+##### `CheckPassword(ID, password string) (ok bool, err error)`
+
+Check a password `password` belonging to a user of ID `ID`. Return whether or not the password hash matches what is stored
+
+##### `SetPassword(ID, password string) (err error)`
+
+Set a user's password hash to the hash of `password`

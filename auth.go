@@ -25,5 +25,13 @@ func RevokeTokenOf(token string) (err error) {
 }
 
 func RevokeSecretOf(secret string) (err error) {
-    return
+	return
+}
+
+func CheckPassword(ID, password string) (ok bool, err error) {
+	return
+}
+
+func SetPassword(ID, password string) (err error) {
+	return
 }
