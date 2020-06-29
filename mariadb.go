@@ -28,8 +28,8 @@ var (
 			nsfw BOOLEAN`,
 		USER_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
-			email VARCHAR(63) NOT NULL,
-			nick VARCHAR(63) NOT NULL,
+			email VARCHAR(63) UNIQUE NOT NULL,
+			nick VARCHAR(63) UNIQUE NOT NULL,
 			bio VARCHAR(255) NOT NULL,
 			subscriber_count BIGINT UNSIGNED NOT NULL,
 			subscription_count BIGINT UNSIGNED NOT NULL,
@@ -37,7 +37,8 @@ var (
 			created BIGINT UNSIGNED NOT NULL`,
 		AUTH_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
-			hash BINARY(60)`,
+			hash BINARY(60) NOT NULL,
+			secret CHAR(128)`,
 		TAG_TABLE: `
 			id CHAR(36) NOT NULL,
 			tag VARCHAR(63) NOT NULL,
