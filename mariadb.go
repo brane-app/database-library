@@ -69,6 +69,7 @@ func connect(address string) {
 		panic(err)
 	}
 
+	database.SetMaxOpenConns(150)
 	create()
 }
 
