@@ -1,6 +1,8 @@
 package monkebase
 
 import (
+	"github.com/jmoiron/sqlx"
+
 	"strings"
 )
 
@@ -57,6 +59,36 @@ func mapCopy(source map[string]interface{}) (copy map[string]interface{}) {
 	var value interface{}
 	for key, value = range source {
 		copy[key] = value
+	}
+
+	return
+}
+
+func scanManyContent(rows *sqlx.Rows, count int) (content []Content, size int, err error) {
+	var ids []string = make([]string, count)
+	var scanned []Content = make([]Content, count)
+	size = 0
+
+	for rows.Next() {
+		rows.StructScan(&scanned[size])
+		ids[size] = scanned[size].ID
+		size++
+	}
+
+	// TODO: append can be used here
+	// to limit the capacity of the slice
+	// to save a bit of memmory
+	content = make([]Content, size)
+	copy(content, scanned)
+
+	var tags map[string][]string
+	if tags, err = getManyTags(ids); err != nil {
+		return
+	}
+
+	var index int
+	for index, _ = range content {
+		content[index].Tags = tags[content[index].ID]
 	}
 
 	return

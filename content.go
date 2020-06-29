@@ -78,21 +78,10 @@ func ReadManyContent(offset, count int) (content []Content, size int, err error)
 	}
 
 	defer rows.Close()
+	content, size, err = scanManyContent(rows, count)
+	return
+}
 
-	var ids []string = make([]string, count)
-	content = make([]Content, count)
-	size = 0
-
-	for rows.Next() {
-		rows.StructScan(&content[size])
-		ids[size] = content[size].ID
-		size++
-	}
-
-	content = content[:size]
-
-	var tags map[string][]string
-	if tags, err = getManyTags(ids); err != nil {
 		return
 	}
 
