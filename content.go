@@ -66,7 +66,7 @@ func ReadSingleContent(ID string) (content Content, exists bool, err error) {
 /**
  * Read `count` number of contents, starting from `offset`
  * Newest posts are returned first
- * Uses 2 queries:
+ * Uses 2 queries
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
@@ -82,18 +82,21 @@ func ReadManyContent(offset, count int) (content []Content, size int, err error)
 	return
 }
 
+/**
+ * Same as ReadManyContent but for some author of id `ID`
+ * Uses 2 queries
+ * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
+ * 		queries from: 	getManyTags
+ */
+func ReadAuthorContent(ID string, offset, count int) (content []Content, size int, err error) {
+	var statement string = "SELECT * FROM " + CONTENT_TABLE + " WHERE author=? ORDER BY created DESC LIMIT ?, ?"
+	var rows *sqlx.Rows
+	if rows, err = database.Queryx(statement, ID, offset, count); err != nil || rows == nil {
 		return
 	}
 
-	var index int
-	for index, _ = range content {
-		content[index].Tags = tags[content[index].ID]
-	}
-
-	return
-}
-
-func ReadAuthorContent(ID string, index, limit int) (content []interface{}, size, err error) {
+	defer rows.Close()
+	content, size, err = scanManyContent(rows, count)
 	return
 }
 

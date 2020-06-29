@@ -216,6 +216,7 @@ func Test_ReadManyContent(test *testing.T) {
 		}
 	}
 }
+
 func Test_ReadManyContent_Fewer(test *testing.T) {
 	var err error
 	if _, err = database.Query("DROP TABLE IF EXISTS " + CONTENT_TABLE); err != nil {
@@ -238,10 +239,54 @@ func Test_ReadManyContent_Fewer(test *testing.T) {
 	}
 
 	if size != many-offset {
-		test.Errorf("Got too many posts! have: %d, want: %d", size, many-offset)
+		test.Errorf("Got too many or few posts! have: %d, want: %d", size, many-offset)
 	}
 
 	if len(content) != size {
 		test.Errorf("content size %d (%+v) does not match size %d!", len(content), content, size)
 	}
+}
+
+func Test_ReadAuthorContent(test *testing.T) {
+	var err error
+	if err = populate(20); err != nil {
+		test.Fatal(err)
+	}
+
+	var author string = uuid.New().String()
+	var modified map[string]interface{}
+
+	var index, many int = 0, 20
+	for index != many {
+		modified = mapCopy(writableContent)
+		modified["author"] = author
+		modified["created"] = time.Now().Unix()
+		modified["id"] = uuid.New().String()
+
+		if err = WriteContent(modified); err != nil {
+			test.Fatal(err)
+		}
+
+		index++
+	}
+
+	var offset int = 4
+
+	var content []Content
+	var size int
+	if content, size, err = ReadAuthorContent(author, offset, many); err != nil {
+		test.Fatal(err)
+	}
+
+	if size != many-offset {
+		test.Errorf("Got too many or few posts! have: %d, want: %d", size, many-offset)
+	}
+
+	var single Content
+	for _, single = range content {
+		if single.Author != author {
+			test.Errorf("Content %s author mismatch! have: %s, want: %s", single.ID, single.Author, author)
+		}
+	}
+
 }
