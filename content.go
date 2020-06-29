@@ -63,6 +63,13 @@ func ReadSingleContent(ID string) (content Content, exists bool, err error) {
 	return
 }
 
+/**
+ * Read `count` number of contents, starting from `offset`
+ * Newest posts are returned first
+ * Uses 2 queries:
+ * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
+ * 		queries from: 	getManyTags
+ */
 func ReadManyContent(offset, count int) (content []Content, size int, err error) {
 	var statement string = "SELECT * FROM " + CONTENT_TABLE + " ORDER BY created DESC LIMIT ?, ?"
 	var rows *sqlx.Rows
@@ -127,6 +134,13 @@ func getTags(ID string) (tags []string, err error) {
 	return
 }
 
+/**
+ * Get the tags for every post of id in `IDs`
+ * Returns a map where
+ * 		id -> []tags
+ * Uses 1 query:
+ * 		get tags: SELECT id, tag FROM TAG_TABLE WHERE id IN (IDs...)
+ */
 func getManyTags(IDs []string) (tags map[string][]string, err error) {
 	if len(IDs) < 1 {
 		return
