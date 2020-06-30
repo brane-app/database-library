@@ -39,6 +39,10 @@ var (
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			hash BINARY(60) NOT NULL,
 			secret CHAR(128)`,
+		TOKEN_TABLE: `
+			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
+			token BINARY(24) UNIQUE NOT NULL,
+			created BIGINT UNSIGNED NOT NULL`,
 		TAG_TABLE: `
 			id CHAR(36) NOT NULL,
 			tag VARCHAR(63) NOT NULL,
@@ -56,6 +60,7 @@ const (
 	USER_TABLE         = "users"
 	CONTENT_TABLE      = "content"
 	AUTH_TABLE         = "auth"
+	TOKEN_TABLE        = "token"
 	TAG_TABLE          = "tags"
 	SUBSCRIPTION_TABLE = "subs"
 )
