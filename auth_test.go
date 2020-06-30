@@ -7,10 +7,14 @@ import (
 )
 
 func Test_SetPassword(test *testing.T) {
-	var password string = randStringOfSize(64)
+	var password string
+	var err error
+	if password, err = randomString(64); err != nil {
+		test.Fatal(err)
+	}
+
 	var id string = uuid.New().String()
 
-	var err error
 	if err = SetPassword(id, password); err != nil {
 		test.Fatal(err)
 	}
@@ -28,11 +32,14 @@ func Test_SetPassword(test *testing.T) {
 func Test_SetPassword_length(test *testing.T) {
 	var id string = uuid.New().String()
 	var err error
-
+	var password string
 	var index int = 1
 	for index != 4*64 {
 		index = index * 4
-		if err = SetPassword(id, randStringOfSize(index)); err != nil {
+		if password, err = randomString(index); err != nil {
+			test.Fatal(err)
+		}
+		if err = SetPassword(id, password); err != nil {
 			test.Fatal(err)
 		}
 	}
@@ -45,8 +52,14 @@ func Test_CheckPassword_wrong(test *testing.T) {
 	}
 
 	var id string = uuid.New().String()
+
 	var err error
-	if err = SetPassword(id, randStringOfSize(64)); err != nil {
+	var password string
+	if password, err = randomString(64); err != nil {
+		test.Fatal(err)
+	}
+
+	if err = SetPassword(id, password); err != nil {
 		test.Fatal(err)
 	}
 

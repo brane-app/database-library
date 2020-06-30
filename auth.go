@@ -4,7 +4,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 
-	"math/rand"
+	"crypto/rand"
+	"encoding/base64"
 )
 
 var (
@@ -18,15 +19,18 @@ const (
 	RAND_LENGTH   = 62
 )
 
-func randStringOfSize(size int) (generated string) {
-	var items []rune = make([]rune, size)
+func randomBytes(size int) (generated []byte, err error) {
+	generated = make([]byte, size)
+	_, err = rand.Read(generated)
+	return
+}
 
-	var index int
-	for index = range items {
-		items[index] = randable[rand.Intn(RAND_LENGTH)]
+func randomString(size int) (generated string, err error) {
+	var bytes []byte
+	if bytes, err = randomBytes(size); err == nil {
+		generated = base64.URLEncoding.EncodeToString(bytes)
 	}
 
-	generated = string(items)
 	return
 }
 
