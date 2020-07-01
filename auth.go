@@ -62,11 +62,9 @@ func CheckSecret(ID, secret string) (valid bool, err error) {
 	return
 }
 
-func RevokeSecret(secret string) (err error) {
-	return
-}
-
-func RevokeSecretOf(secret string) (err error) {
+func RevokeSecretOf(ID string) (err error) {
+	var statement string = "DELETE FROM " + SECRET_TABLE + " WHERE id=? LIMIT 1"
+	_, err = database.Exec(statement, ID)
 	return
 }
 

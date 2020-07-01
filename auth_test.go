@@ -133,3 +133,34 @@ func Test_CheckSecret_invalid(test *testing.T) {
 		test.Errorf("A bad secret is valid for uuid %s!", id)
 	}
 }
+
+func Test_RevokeSecretOf(test *testing.T) {
+	var id string = uuid.New().String()
+
+	var secret string
+	var err error
+	if secret, err = CreateSecret(id); err != nil {
+		test.Fatal()
+	}
+
+	var valid bool
+	if valid, err = CheckSecret(id, secret); err != nil {
+		test.Fatal(err)
+	}
+
+	if !valid {
+		test.Errorf("Just set secret %s is invalid for %s!", secret, id)
+	}
+
+	if err = RevokeSecretOf(id); err != nil {
+		test.Fatal(err)
+	}
+
+	if valid, err = CheckSecret(id, secret); err == nil {
+		test.Errorf("secret for revoked uuid returned no err!")
+	}
+
+	if valid {
+		test.Errorf("revoked secret %s for %s is still valid!", secret, id)
+	}
+}

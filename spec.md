@@ -61,10 +61,6 @@ Create a secret for a user of ID `ID`, invalidating any other secret that this u
 
 Revoke a token `token`. If that token is not active, do nothing
 
-##### `RevokeSecret(secret string) (err error)`
-
-Revoke a secret `secret`. If that secret is not active, do nothing
-
 ##### `RevokeTokenOf(ID string) (err error)`
 
 Revoke a token belonging to user of ID `ID`. If they have no token, or no such user exists, do nothing
