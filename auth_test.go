@@ -77,7 +77,7 @@ func Test_CheckPassword_wrong(test *testing.T) {
 }
 
 func Test_CreateSecret(test *testing.T) {
-	var id = uuid.New().String()
+	var id string = uuid.New().String()
 
 	var err error
 	var secret string
@@ -86,4 +86,50 @@ func Test_CreateSecret(test *testing.T) {
 	}
 
 	_ = secret
+}
+
+func Test_CheckSecret(test *testing.T) {
+	var id string = uuid.New().String()
+
+	var secret string
+	var err error
+	if secret, err = CreateSecret(id); err != nil {
+		test.Fatal(err)
+	}
+
+	var valid bool
+	if valid, err = CheckSecret(id, secret); err != nil {
+		test.Fatal(err)
+	}
+
+	if !valid {
+		test.Errorf("Just set secret %s is invalid for %s!", secret, id)
+	}
+}
+
+func Test_CheckSecret_invalid(test *testing.T) {
+	var id string = uuid.New().String()
+
+	var secret string
+	var err error
+	if secret, err = CreateSecret(id); err != nil {
+		test.Fatal(err)
+	}
+
+	var valid bool
+	if valid, err = CheckSecret(uuid.New().String(), secret); err == nil {
+		test.Errorf("secret for random uuid returned no err!")
+	}
+
+	if valid {
+		test.Errorf("Just set secret %s is valid for a random uuid!", secret)
+	}
+
+	if valid, err = CheckSecret(id, "not_a_secret"); err != nil {
+		test.Fatal(err)
+	}
+
+	if valid {
+		test.Errorf("A bad secret is valid for uuid %s!", id)
+	}
 }

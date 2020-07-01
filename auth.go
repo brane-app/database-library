@@ -49,6 +49,21 @@ func CreateSecret(ID string) (secret string, err error) {
 }
 
 func CheckSecret(ID, secret string) (valid bool, err error) {
+	var statement string = "SELECT secret FROM " + SECRET_TABLE + " WHERE id=? LIMIT 1"
+	var rows *sqlx.Rows
+	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
+		return
+	}
+
+	defer rows.Close()
+	rows.Next()
+	var bytes []byte
+	if err = rows.Scan(&bytes); err != nil {
+		return
+	}
+
+	valid = secret == base64.URLEncoding.EncodeToString(bytes)
+
 	return
 }
 
