@@ -75,3 +75,15 @@ func Test_CheckPassword_wrong(test *testing.T) {
 		}
 	}
 }
+
+func Test_CreateSecret(test *testing.T) {
+	var id = uuid.New().String()
+
+	var err error
+	var secret string
+	if secret, err = CreateSecret(id); err != nil {
+		test.Fatal(err)
+	}
+
+	_ = secret
+}

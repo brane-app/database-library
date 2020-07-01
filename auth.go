@@ -34,19 +34,21 @@ func randomString(size int) (generated string, err error) {
 	return
 }
 
-func ReadTokenStat(token string) (owner string, valid bool, err error) {
-	return
-}
-
-func CreateToken(ID string) (token string, expires int64, err error) {
-	return
-}
-
 func CreateSecret(ID string) (secret string, err error) {
+	var bytes []byte
+	if bytes, err = randomBytes(SECRET_LENGTH); err != nil {
+		return
+	}
+
+	var statement string = "REPLACE INTO " + SECRET_TABLE + " (id, secret) VALUES (?, ?)"
+	if _, err = database.Exec(statement, ID, bytes); err == nil {
+		secret = base64.URLEncoding.EncodeToString(bytes)
+	}
+
 	return
 }
 
-func RevokeToken(token string) (err error) {
+func CheckSecret(ID, secret string) (valid bool, err error) {
 	return
 }
 
@@ -54,11 +56,23 @@ func RevokeSecret(secret string) (err error) {
 	return
 }
 
-func RevokeTokenOf(token string) (err error) {
+func RevokeSecretOf(secret string) (err error) {
 	return
 }
 
-func RevokeSecretOf(secret string) (err error) {
+func CreateToken(ID string) (token string, expires int64, err error) {
+	return
+}
+
+func ReadTokenStat(token string) (owner string, valid bool, err error) {
+	return
+}
+
+func RevokeToken(token string) (err error) {
+	return
+}
+
+func RevokeTokenOf(token string) (err error) {
 	return
 }
 
