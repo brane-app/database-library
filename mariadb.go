@@ -37,12 +37,14 @@ var (
 			created BIGINT UNSIGNED NOT NULL`,
 		AUTH_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
-			hash BINARY(60) NOT NULL,
-			secret BINARY(128)`,
+			hash BINARY(60) NOT NULL`,
 		TOKEN_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
-			token BINARY(24) UNIQUE NOT NULL,
+			token BINARY(24) UNIQUE,
 			created BIGINT UNSIGNED NOT NULL`,
+		SECRET_TABLE: `
+			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
+			secret BINARY(128) UNIQUE`,
 		TAG_TABLE: `
 			id CHAR(36) NOT NULL,
 			tag VARCHAR(63) NOT NULL,
@@ -61,6 +63,7 @@ const (
 	CONTENT_TABLE      = "content"
 	AUTH_TABLE         = "auth"
 	TOKEN_TABLE        = "token"
+	SECRET_TABLE       = "secret"
 	TAG_TABLE          = "tags"
 	SUBSCRIPTION_TABLE = "subs"
 )
