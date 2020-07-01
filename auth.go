@@ -112,10 +112,19 @@ func ReadTokenStat(token string) (owner string, valid bool, err error) {
 }
 
 func RevokeToken(token string) (err error) {
+	var bytes []byte
+	if bytes, err = base64.URLEncoding.DecodeString(token); err != nil {
+		return
+	}
+
+	var statement string = "DELETE FROM " + TOKEN_TABLE + " WHERE token=?"
+	_, err = database.Exec(statement, bytes)
 	return
 }
 
-func RevokeTokenOf(token string) (err error) {
+func RevokeTokenOf(ID string) (err error) {
+	var statement string = "DELETE FROM " + TOKEN_TABLE + " WHERE id=?"
+	_, err = database.Exec(statement, ID)
 	return
 }
 

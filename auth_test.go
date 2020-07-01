@@ -260,3 +260,49 @@ func Test_ReadTokenStat_err(test *testing.T) {
 		test.Fatal("ReadTokenStat with bad base64 err is nil!")
 	}
 }
+
+func Test_RevokeToken(test *testing.T) {
+	var id string = uuid.New().String()
+
+	var token string
+	var err error
+	if token, _, err = CreateToken(id); err != nil {
+		test.Fatal(err)
+	}
+
+	if err = RevokeToken(token); err != nil {
+		test.Fatal(err)
+	}
+
+	var valid bool
+	if _, valid, err = ReadTokenStat(token); err != nil {
+		test.Fatal(err)
+	}
+
+	if valid {
+		test.Errorf("token %s is valid", token)
+	}
+}
+
+func Test_RevokeTokenOf(test *testing.T) {
+	var id string = uuid.New().String()
+
+	var token string
+	var err error
+	if token, _, err = CreateToken(id); err != nil {
+		test.Fatal(err)
+	}
+
+	if err = RevokeTokenOf(id); err != nil {
+		test.Fatal(err)
+	}
+
+	var valid bool
+	if _, valid, err = ReadTokenStat(token); err != nil {
+		test.Fatal(err)
+	}
+
+	if valid {
+		test.Errorf("token %s is valid", token)
+	}
+}
