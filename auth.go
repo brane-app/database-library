@@ -8,15 +8,10 @@ import (
 	"encoding/base64"
 )
 
-var (
-	randable []rune = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
-)
-
 const (
 	BCRYPT_ITERS  = 12
 	TOKEN_LENGTH  = 24
 	SECRET_LENGTH = 128
-	RAND_LENGTH   = 62
 )
 
 func randomBytes(size int) (generated []byte, err error) {
