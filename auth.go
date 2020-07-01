@@ -35,10 +35,10 @@ func CreateSecret(ID string) (secret string, err error) {
 		return
 	}
 
+	secret = base64.URLEncoding.EncodeToString(bytes)
+
 	var statement string = "REPLACE INTO " + SECRET_TABLE + " (id, secret) VALUES (?, ?)"
-	if _, err = database.Exec(statement, ID, bytes); err == nil {
-		secret = base64.URLEncoding.EncodeToString(bytes)
-	}
+	_, err = database.Exec(statement, ID, bytes)
 
 	return
 }
