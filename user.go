@@ -29,10 +29,56 @@ func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
 	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE id=? LIMIT 1"
 
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID); err != nil {
+	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil{
 		return
 	}
 
+	defer rows.Close()
+
+	if exists = rows.Next(); exists {
+		err = rows.StructScan(&user)
+	}
+
+	return
+}
+
+/**
+ * Read some user of email `email` from USER_TABLE
+ * Works in the same way as ReadSingleUser, but with email
+ * Uses 1 query
+ * 		read user: 	SELECT * FROM USER_TABLE WHERE email=email LIMIT 1
+ */
+func ReadSingleUserEmail(email string) (user monketype.User, exists bool, err error) {
+	var statement string = "SELECT * FROM "+USER_TABLE+" WHERE email=? LIMIT 1"
+
+	var rows *sqlx.Rows
+	if rows, err = database.Queryx(statement, email); err != nil || rows == nil {
+		return
+	}
+
+	defer rows.Close()
+	if exists = rows.Next(); exists {
+		err = rows.StructScan(&user)
+	}
+
+	return
+}
+
+/**
+ * Read some user of email `email` from USER_TABLE
+ * Works in the same way as ReadSingleUser, but with nick
+ * Uses 1 query
+ * 		read user: 	SELECT * FROM USER_TABLE WHERE nick=nick LIMIT 1
+ */
+func ReadSingleUserNick(nick string) (user monketype.User, exists bool, err error) {
+	var statement string = "SELECT * FROM "+USER_TABLE+" WHERE nick=? LIMIT 1"
+
+	var rows *sqlx.Rows
+	if rows, err = database.Queryx(statement, nick); err != nil || rows == nil {
+		return
+	}
+
+	defer rows.Close()
 	if exists = rows.Next(); exists {
 		err = rows.StructScan(&user)
 	}
