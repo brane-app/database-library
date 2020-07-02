@@ -7,6 +7,8 @@ github.com/imonke/monketype v0.0.0-20200701225216-eba4f952a703 h1:sisPw3cAjnkvCb
 github.com/imonke/monketype v0.0.0-20200701225216-eba4f952a703/go.mod h1:/6d6kpJ4zrDTyopAyygmuFmxxPDyxfnrxBkS2biIU9M=
 github.com/imonke/monketype v0.0.0-20200701235631-34a38dca22f0 h1:KwT9KlBC0fBl8csOR/XsVH094TEmwfR+uBYS8n7SlTo=
 github.com/imonke/monketype v0.0.0-20200701235631-34a38dca22f0/go.mod h1:/6d6kpJ4zrDTyopAyygmuFmxxPDyxfnrxBkS2biIU9M=
+github.com/imonke/monketype v0.0.0-20200702003911-d46b79f825eb h1:T8l72WMRhMQP0so5pyzk6gZazG0nGKqMyecBjPOlxxk=
+github.com/imonke/monketype v0.0.0-20200702003911-d46b79f825eb/go.mod h1:/6d6kpJ4zrDTyopAyygmuFmxxPDyxfnrxBkS2biIU9M=
 github.com/jmoiron/sqlx v1.2.0 h1:41Ip0zITnmWNR/vHV+S4m+VoUivnWY5E4OJfLZjCJMA=
 github.com/jmoiron/sqlx v1.2.0/go.mod h1:1FEQNm3xlJgrMD+FBdI9+xvCksHtbpVBBw5dYhBSsks=
 github.com/lib/pq v1.0.0 h1:X5PMW56eZitiTeO7tKzZxFCSpbFZJtkMMooicw2us9A=
