@@ -28,7 +28,7 @@ func mapMod(source map[string]interface{}, mods ...map[string]interface{}) (modi
 }
 
 func TestMain(main *testing.M) {
-	connect(CONNECTION)
+	Connect(CONNECTION)
 
 	var err error
 
@@ -47,7 +47,7 @@ func TestMain(main *testing.M) {
 	os.Exit(main.Run())
 }
 
-func _Test_connect(test *testing.T) {
+func _Test_Connect(test *testing.T) {
 	defer func(test *testing.T) {
 		var recovered interface{}
 
@@ -59,5 +59,5 @@ func _Test_connect(test *testing.T) {
 	var existing *sqlx.DB = database
 	defer func(existing *sqlx.DB) { database = existing }(existing)
 
-	connect("foobar")
+	Connect("foobar")
 }

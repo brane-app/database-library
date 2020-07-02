@@ -68,7 +68,7 @@ const (
 	SUBSCRIPTION_TABLE = "subs"
 )
 
-func connect(address string) {
+func Connect(address string) {
 	var err error
 	if database, err = sqlx.Open("mysql", address); err != nil {
 		panic(err)
