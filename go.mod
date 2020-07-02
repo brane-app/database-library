@@ -1,3 +1,3 @@
-module github.com/gastrodon/monkebase
+module github.com/imonke/monkebase
 
 go 1.14
