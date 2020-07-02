@@ -1,6 +1,7 @@
 package monkebase
 
 import (
+	"github.com/imonke/monketype"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -24,7 +25,7 @@ func WriteUser(user map[string]interface{}) (err error) {
  * Uses 1 query
  * 		read user: 	SELECT * FROM USER_TABLE WHERE id=ID LIMIT 1
  */
-func ReadSingleUser(ID string) (user User, exists bool, err error) {
+func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
 	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE id=? LIMIT 1"
 
 	var rows *sqlx.Rows

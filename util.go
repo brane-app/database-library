@@ -1,6 +1,7 @@
 package monkebase
 
 import (
+	"github.com/imonke/monketype"
 	"github.com/jmoiron/sqlx"
 
 	"strings"
@@ -64,9 +65,9 @@ func mapCopy(source map[string]interface{}) (copy map[string]interface{}) {
 	return
 }
 
-func scanManyContent(rows *sqlx.Rows, count int) (content []Content, size int, err error) {
+func scanManyContent(rows *sqlx.Rows, count int) (content []monketype.Content, size int, err error) {
 	var ids []string = make([]string, count)
-	var scanned []Content = make([]Content, count)
+	var scanned []monketype.Content = make([]monketype.Content, count)
 	size = 0
 
 	for rows.Next() {
@@ -78,7 +79,7 @@ func scanManyContent(rows *sqlx.Rows, count int) (content []Content, size int, e
 	// TODO: append can be used here
 	// to limit the capacity of the slice
 	// to save a bit of memmory
-	content = make([]Content, size)
+	content = make([]monketype.Content, size)
 	copy(content, scanned)
 
 	var tags map[string][]string

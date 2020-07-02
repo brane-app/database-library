@@ -2,6 +2,7 @@ package monkebase
 
 import (
 	"github.com/google/uuid"
+	"github.com/imonke/monketype"
 
 	"sort"
 	"strconv"
@@ -29,9 +30,9 @@ var (
 	}
 )
 
-func contentOK(test *testing.T, data map[string]interface{}, have Content) {
+func contentOK(test *testing.T, data map[string]interface{}, have monketype.Content) {
 	if data["id"].(string) != have.ID {
-		test.Errorf("Content ID mismatch! have: %s, want: %s", have.ID, data["id"])
+		test.Errorf("monketype.Content ID mismatch! have: %s, want: %s", have.ID, data["id"])
 	}
 
 	var tags []string = data["tags"].([]string)
@@ -124,7 +125,7 @@ func Test_ReadSingleContent(test *testing.T) {
 
 	WriteContent(modified)
 
-	var content Content = Content{}
+	var content monketype.Content = monketype.Content{}
 	var exists bool
 	var err error
 	if content, exists, err = ReadSingleContent(modified["id"].(string)); err != nil {
@@ -155,7 +156,7 @@ func Test_ReadSingleContent_ManyTags(test *testing.T) {
 
 	WriteContent(modified)
 
-	var content Content = Content{}
+	var content monketype.Content = monketype.Content{}
 	var exists bool
 	var err error
 	if content, exists, err = ReadSingleContent(modified["id"].(string)); err != nil {
@@ -172,7 +173,7 @@ func Test_ReadSingleContent_ManyTags(test *testing.T) {
 func Test_ReadSingleContent_NotExists(test *testing.T) {
 	var id string = uuid.New().String()
 
-	var content Content
+	var content monketype.Content
 	var exists bool
 	var err error
 	if content, exists, err = ReadSingleContent(id); err != nil {
@@ -193,7 +194,7 @@ func Test_ReadManyContent(test *testing.T) {
 
 	var offset, count int = 4, 15
 
-	var content []Content
+	var content []monketype.Content
 	var size int
 	if content, size, err = ReadManyContent(offset, count); err != nil {
 		test.Fatal(err)
@@ -208,7 +209,7 @@ func Test_ReadManyContent(test *testing.T) {
 	}
 
 	var index, suffix int
-	var single Content
+	var single monketype.Content
 	for index, single = range content {
 		suffix = size - index + 12
 		if single.ID != "many_"+strconv.Itoa(suffix) {
@@ -232,7 +233,7 @@ func Test_ReadManyContent_Fewer(test *testing.T) {
 
 	var offset, count int = 4, 15
 
-	var content []Content
+	var content []monketype.Content
 	var size int
 	if content, size, err = ReadManyContent(offset, count); err != nil {
 		test.Fatal(err)
@@ -272,7 +273,7 @@ func Test_ReadAuthorContent(test *testing.T) {
 
 	var offset int = 4
 
-	var content []Content
+	var content []monketype.Content
 	var size int
 	if content, size, err = ReadAuthorContent(author, offset, many); err != nil {
 		test.Fatal(err)
@@ -282,10 +283,10 @@ func Test_ReadAuthorContent(test *testing.T) {
 		test.Errorf("Got too many or few posts! have: %d, want: %d", size, many-offset)
 	}
 
-	var single Content
+	var single monketype.Content
 	for _, single = range content {
 		if single.Author != author {
-			test.Errorf("Content %s author mismatch! have: %s, want: %s", single.ID, single.Author, author)
+			test.Errorf("monketype.Content %s author mismatch! have: %s, want: %s", single.ID, single.Author, author)
 		}
 	}
 

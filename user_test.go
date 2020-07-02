@@ -2,6 +2,7 @@ package monkebase
 
 import (
 	"github.com/google/uuid"
+	"github.com/imonke/monketype"
 
 	"testing"
 	"time"
@@ -20,7 +21,7 @@ var (
 	}
 )
 
-func userOK(test *testing.T, data map[string]interface{}, have User) {
+func userOK(test *testing.T, data map[string]interface{}, have monketype.User) {
 	if data["id"].(string) != have.ID {
 		test.Errorf("User ID mismatch! have: %s, want: %s", have.ID, data["id"])
 	}
@@ -85,7 +86,7 @@ func Test_ReadSingleUser(test *testing.T) {
 
 	WriteUser(modified)
 
-	var user User
+	var user monketype.User
 	var exists bool
 	var err error
 	if user, exists, err = ReadSingleUser(modified["id"].(string)); err != nil {
@@ -102,7 +103,7 @@ func Test_ReadSingleUser(test *testing.T) {
 func Test_ReadSingleUser_NotExists(test *testing.T) {
 	var id string = uuid.New().String()
 
-	var user User
+	var user monketype.User
 	var exists bool
 	var err error
 	if user, exists, err = ReadSingleUser(id); err != nil {

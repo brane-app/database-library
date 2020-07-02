@@ -1,6 +1,7 @@
 package monkebase
 
 import (
+	"github.com/imonke/monketype"
 	"github.com/jmoiron/sqlx"
 
 	"database/sql"
@@ -40,7 +41,7 @@ func WriteContent(content map[string]interface{}) (err error) {
  * 		get content: 	SELECT * FROM CONTENT_TABLE WHERE id=ID LIMIT 1
  * 		get tags:		SELECT tag FROM TAG_TABLE WHERE id=ID
  */
-func ReadSingleContent(ID string) (content Content, exists bool, err error) {
+func ReadSingleContent(ID string) (content monketype.Content, exists bool, err error) {
 	var statement string = "SELECT * FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
 
 	var rows *sqlx.Rows
@@ -70,7 +71,7 @@ func ReadSingleContent(ID string) (content Content, exists bool, err error) {
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func ReadManyContent(offset, count int) (content []Content, size int, err error) {
+func ReadManyContent(offset, count int) (content []monketype.Content, size int, err error) {
 	var statement string = "SELECT * FROM " + CONTENT_TABLE + " ORDER BY created DESC LIMIT ?, ?"
 	var rows *sqlx.Rows
 	if rows, err = database.Queryx(statement, offset, count); err != nil || rows == nil {
@@ -88,7 +89,7 @@ func ReadManyContent(offset, count int) (content []Content, size int, err error)
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func ReadAuthorContent(ID string, offset, count int) (content []Content, size int, err error) {
+func ReadAuthorContent(ID string, offset, count int) (content []monketype.Content, size int, err error) {
 	var statement string = "SELECT * FROM " + CONTENT_TABLE + " WHERE author=? ORDER BY created DESC LIMIT ?, ?"
 	var rows *sqlx.Rows
 	if rows, err = database.Queryx(statement, ID, offset, count); err != nil || rows == nil {
