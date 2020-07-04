@@ -6,6 +6,7 @@ import (
 
 	"crypto/rand"
 	"encoding/base64"
+	"database/sql"
 	"time"
 )
 
@@ -47,20 +48,17 @@ func CreateSecret(ID string) (secret string, err error) {
 
 func CheckSecret(ID, secret string) (valid bool, err error) {
 	var statement string = "SELECT secret FROM " + SECRET_TABLE + " WHERE id=? LIMIT 1"
-	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
-		return
-	}
-
-	defer rows.Close()
-	rows.Next()
 	var bytes []byte
-	if err = rows.Scan(&bytes); err != nil {
+	if err = database.QueryRowx(statement, ID).Scan(&bytes); err != nil {
+		if err == sql.ErrNoRows {
+			err = nil
+			valid = false
+		}
+
 		return
 	}
 
 	valid = secret == base64.URLEncoding.EncodeToString(bytes)
-
 	return
 }
 
@@ -128,23 +126,19 @@ func RevokeTokenOf(ID string) (err error) {
 	return
 }
 
-func CheckPassword(ID, password string) (ok bool, err error) {
+func CheckPassword(ID, password string) (valid bool, err error) {
 	var statement string = "SELECT hash FROM " + AUTH_TABLE + " WHERE id=? LIMIT 1"
 	var hash []byte
+	if err = database.QueryRowx(statement, ID).Scan(&hash); err != nil {
+		if err == sql.ErrNoRows {
+			err = nil
+			valid = false
+		}
 
-	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
 		return
 	}
 
-	defer rows.Close()
-
-	rows.Next()
-	if err = rows.Scan(&hash); err != nil {
-		return
-	}
-
-	ok = bcrypt.CompareHashAndPassword(hash, []byte(password)) == nil
+	valid = bcrypt.CompareHashAndPassword(hash, []byte(password)) == nil
 	return
 }
 

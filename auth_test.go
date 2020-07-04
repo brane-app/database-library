@@ -119,8 +119,8 @@ func Test_CheckSecret_invalid(test *testing.T) {
 	}
 
 	var valid bool
-	if valid, err = CheckSecret(uuid.New().String(), secret); err == nil {
-		test.Errorf("secret for random uuid returned no err!")
+	if valid, err = CheckSecret(uuid.New().String(), secret); err != nil {
+		test.Fatal(err)
 	}
 
 	if valid {
@@ -158,8 +158,8 @@ func Test_RevokeSecretOf(test *testing.T) {
 		test.Fatal(err)
 	}
 
-	if valid, err = CheckSecret(id, secret); err == nil {
-		test.Errorf("secret for revoked uuid returned no err!")
+	if valid, err = CheckSecret(id, secret); err != nil {
+		test.Fatal(err)
 	}
 
 	if valid {
