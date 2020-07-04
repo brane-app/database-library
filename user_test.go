@@ -114,3 +114,28 @@ func Test_ReadSingleUser_NotExists(test *testing.T) {
 		test.Errorf("Query for nonexisting id got %+v", user)
 	}
 }
+
+func Test_DeleteUser(test *testing.T) {
+	var mod map[string]interface{} = map[string]interface{}{
+		"id":    uuid.New().String(),
+		"email": "delete@monke.io",
+	}
+
+	var err error
+	if err = WriteUser(mapMod(writableUser, mod)); err != nil {
+		test.Fatal(err)
+	}
+
+	if err = DeleteUser(mod["id"].(string)); err != nil {
+		test.Fatal(err)
+	}
+
+	var exists bool
+	if _, exists, err = ReadSingleUser(mod["id"].(string)); err != nil {
+		test.Fatal(err)
+	}
+
+	if exists {
+		test.Errorf("user %s exists after being deleted!", mod["id"])
+	}
+}

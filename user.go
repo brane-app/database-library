@@ -21,6 +21,17 @@ func WriteUser(user map[string]interface{}) (err error) {
 }
 
 /**
+ * Delete some user from USER_TABLE
+ * Uses 1 query:
+ * 		delete user: 	DELETE FROM USER_TABLE WHERE id=ID LIMIT 1
+ */
+func DeleteUser(ID string) (err error) {
+	var statement string = "DELETE FROM " + USER_TABLE + " WHERE id=? LIMIT 1"
+	_, err = database.Exec(statement, ID)
+	return
+}
+
+/**
  * Read some user of id `ID` from USER_TABLE
  * Uses 1 query
  * 		read user: 	SELECT * FROM USER_TABLE WHERE id=ID LIMIT 1
@@ -29,7 +40,7 @@ func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
 	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE id=? LIMIT 1"
 
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil{
+	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
 		return
 	}
 
@@ -49,7 +60,7 @@ func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
  * 		read user: 	SELECT * FROM USER_TABLE WHERE email=email LIMIT 1
  */
 func ReadSingleUserEmail(email string) (user monketype.User, exists bool, err error) {
-	var statement string = "SELECT * FROM "+USER_TABLE+" WHERE email=? LIMIT 1"
+	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE email=? LIMIT 1"
 
 	var rows *sqlx.Rows
 	if rows, err = database.Queryx(statement, email); err != nil || rows == nil {
@@ -71,7 +82,7 @@ func ReadSingleUserEmail(email string) (user monketype.User, exists bool, err er
  * 		read user: 	SELECT * FROM USER_TABLE WHERE nick=nick LIMIT 1
  */
 func ReadSingleUserNick(nick string) (user monketype.User, exists bool, err error) {
-	var statement string = "SELECT * FROM "+USER_TABLE+" WHERE nick=? LIMIT 1"
+	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE nick=? LIMIT 1"
 
 	var rows *sqlx.Rows
 	if rows, err = database.Queryx(statement, nick); err != nil || rows == nil {
