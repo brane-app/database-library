@@ -2,7 +2,8 @@ package monkebase
 
 import (
 	"github.com/imonke/monketype"
-	"github.com/jmoiron/sqlx"
+
+	"database/sql"
 )
 
 /**
@@ -31,25 +32,29 @@ func DeleteUser(ID string) (err error) {
 	return
 }
 
+func readSingleUserKey(key, query string) (user monketype.User, exists bool, err error) {
+	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE " + key + "=? LIMIT 1"
+	if err = database.QueryRowx(statement, query).StructScan(&user); err != nil {
+		exists = false
+
+		if err == sql.ErrNoRows {
+			err = nil
+		}
+
+		return
+	}
+
+	exists = true
+	return
+}
+
 /**
  * Read some user of id `ID` from USER_TABLE
  * Uses 1 query
  * 		read user: 	SELECT * FROM USER_TABLE WHERE id=ID LIMIT 1
  */
 func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
-	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE id=? LIMIT 1"
-
-	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
-		return
-	}
-
-	defer rows.Close()
-
-	if exists = rows.Next(); exists {
-		err = rows.StructScan(&user)
-	}
-
+	user, exists, err = readSingleUserKey("id", ID)
 	return
 }
 
@@ -60,18 +65,7 @@ func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
  * 		read user: 	SELECT * FROM USER_TABLE WHERE email=email LIMIT 1
  */
 func ReadSingleUserEmail(email string) (user monketype.User, exists bool, err error) {
-	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE email=? LIMIT 1"
-
-	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, email); err != nil || rows == nil {
-		return
-	}
-
-	defer rows.Close()
-	if exists = rows.Next(); exists {
-		err = rows.StructScan(&user)
-	}
-
+	user, exists, err = readSingleUserKey("email", email)
 	return
 }
 
@@ -82,17 +76,6 @@ func ReadSingleUserEmail(email string) (user monketype.User, exists bool, err er
  * 		read user: 	SELECT * FROM USER_TABLE WHERE nick=nick LIMIT 1
  */
 func ReadSingleUserNick(nick string) (user monketype.User, exists bool, err error) {
-	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE nick=? LIMIT 1"
-
-	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, nick); err != nil || rows == nil {
-		return
-	}
-
-	defer rows.Close()
-	if exists = rows.Next(); exists {
-		err = rows.StructScan(&user)
-	}
-
+	user, exists, err = readSingleUserKey("nick", nick)
 	return
 }
