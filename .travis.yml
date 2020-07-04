@@ -1,5 +1,5 @@
 language: go
-addons:
+services:
     - mysql
 env:
     - MONKEBASE_CONNECTION=travis@tcp(127.0.0.1)/test
