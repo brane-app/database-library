@@ -35,6 +35,12 @@ func WriteContent(content map[string]interface{}) (err error) {
 	return
 }
 
+func DeleteContent(ID string) (err error) {
+	var statement string = "DELETE FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
+	_, err = database.Exec(statement, ID)
+	return
+}
+
 /**
  * Read some content of id `ID`
  * Uses 2 queries

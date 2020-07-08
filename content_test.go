@@ -119,6 +119,32 @@ func Test_WriteContent_err(test *testing.T) {
 	}
 }
 
+func Test_DeleteContent(test *testing.T) {
+	var id string = uuid.New().String()
+	var writable map[string]interface{} = mapMod(
+		writableContent,
+		map[string]interface{}{"id": id},
+	)
+
+	var err error
+	if err = WriteContent(writable); err != nil {
+		test.Fatal(err)
+	}
+
+	if err = DeleteContent(id); err != nil {
+		test.Fatal(err)
+	}
+
+	var exists bool
+	if _, exists, err = ReadSingleContent(id); err != nil {
+		test.Fatal(err)
+	}
+
+	if exists {
+		test.Errorf("deleted content %s still exists", id)
+	}
+}
+
 func Test_ReadSingleContent(test *testing.T) {
 	var modified map[string]interface{} = mapCopy(writableContent)
 	modified["id"] = uuid.New().String()
