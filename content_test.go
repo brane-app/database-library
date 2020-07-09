@@ -134,6 +134,15 @@ func Test_DeleteContent(test *testing.T) {
 	if exists {
 		test.Errorf("deleted content %s still exists", id)
 	}
+
+	var tags []string
+	if tags, err = getTags(id); err != nil {
+		test.Fatal(err)
+	}
+
+	if len(tags) != 0 {
+		test.Errorf("Tags %#v were not deleted for post %s", tags, id)
+	}
 }
 
 func Test_ReadSingleContent(test *testing.T) {
