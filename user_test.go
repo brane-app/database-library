@@ -5,20 +5,11 @@ import (
 	"github.com/imonke/monketype"
 
 	"testing"
-	"time"
 )
 
 var (
-	writableUser map[string]interface{} = map[string]interface{}{
-		"id":                 uuid.New().String(),
-		"email":              "me@imonke.io",
-		"nick":               "imonke",
-		"bio":                "mmmm, monke",
-		"subscriber_count":   0,
-		"subscription_count": 0,
-		"post_count":         0,
-		"created":            time.Now().Unix(),
-	}
+	user         monketype.User         = monketype.NewUser("imonke", "mmm, monke", "me@imonke.io")
+	writableUser map[string]interface{} = user.Map()
 )
 
 func userOK(test *testing.T, data map[string]interface{}, have monketype.User) {

@@ -11,23 +11,14 @@ import (
 )
 
 var (
-	writableContent map[string]interface{} = map[string]interface{}{
-		"id":            uuid.New().String(),
-		"file_url":      "https://gastrodon.io/file/foobar",
-		"author":        uuid.New().String(),
-		"mime":          "png",
-		"tags":          []string{"some", "tags"},
-		"like_count":    10,
-		"dislike_count": 1,
-		"repub_count":   3,
-		"view_count":    400,
-		"comment_count": 4,
-		"created":       time.Now().Unix(),
-		"featured":      false,
-		"featurable":    true,
-		"removed":       false,
-		"nsfw":          false,
-	}
+	content monketype.Content = monketype.NewContent(
+		"https://gastrodon.io/file/foobar",
+		uuid.New().String(),
+		"png",
+		[]string{"some", "tags"},
+		true, false,
+	)
+	writableContent map[string]interface{} = content.Map()
 )
 
 func contentOK(test *testing.T, data map[string]interface{}, have monketype.Content) {
