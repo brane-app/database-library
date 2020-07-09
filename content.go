@@ -35,9 +35,17 @@ func WriteContent(content map[string]interface{}) (err error) {
 	return
 }
 
+/**
+ * Delete some content of id `ID`
+ * Uses 2 queries
+ * 		delete content:		DELETE FROM CONTENT_TABLE WHERE id=ID LIMIT 1
+ * 		queries from: 		dropTags
+ */
 func DeleteContent(ID string) (err error) {
 	var statement string = "DELETE FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
-	_, err = database.Exec(statement, ID)
+	if _, err = database.Exec(statement, ID); err == nil {
+		err = dropTags(ID)
+	}
 	return
 }
 
