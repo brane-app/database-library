@@ -5,8 +5,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"crypto/rand"
-	"encoding/base64"
 	"database/sql"
+	"encoding/base64"
 	"time"
 )
 
@@ -86,6 +86,8 @@ func CreateToken(ID string) (token string, expires int64, err error) {
 func ReadTokenStat(token string) (owner string, valid bool, err error) {
 	var bytes []byte
 	if bytes, err = base64.URLEncoding.DecodeString(token); err != nil {
+		err = nil
+		valid = false
 		return
 	}
 

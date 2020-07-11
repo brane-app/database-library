@@ -255,9 +255,14 @@ func Test_ReadTokenStat_nobody(test *testing.T) {
 }
 
 func Test_ReadTokenStat_err(test *testing.T) {
+	var valid bool
 	var err error
-	if _, _, err = ReadTokenStat("f"); err == nil {
-		test.Fatal("ReadTokenStat with bad base64 err is nil!")
+	if _, _, err = ReadTokenStat("f"); err != nil {
+		test.Fatal(err)
+	}
+
+	if valid {
+		test.Errorf("invalid base64 is valid!")
 	}
 }
 
