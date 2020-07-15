@@ -45,7 +45,15 @@ func TestMain(main *testing.M) {
 		panic("database nil after being set!")
 	}
 
-	os.Exit(main.Run())
+	var result int = main.Run()
+
+	for table, _ = range tables {
+		if err = EmptyTable(table); err != nil {
+			panic(err)
+		}
+	}
+
+	os.Exit(result)
 }
 
 func Test_Connect(test *testing.T) {
