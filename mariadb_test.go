@@ -47,7 +47,7 @@ func TestMain(main *testing.M) {
 	os.Exit(main.Run())
 }
 
-func _Test_Connect(test *testing.T) {
+func Test_Connect(test *testing.T) {
 	defer func(test *testing.T) {
 		var recovered interface{}
 
