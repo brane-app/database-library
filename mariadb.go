@@ -91,3 +91,8 @@ func create() {
 		}
 	}
 }
+
+func EmptyTable(table string) (err error) {
+	_, err = database.Exec("DELETE FROM " + table)
+	return
+}

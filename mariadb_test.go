@@ -1,6 +1,7 @@
 package monkebase
 
 import (
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
 	"os"
@@ -60,4 +61,27 @@ func Test_Connect(test *testing.T) {
 	defer func(existing *sqlx.DB) { database = existing }(existing)
 
 	Connect("foobar")
+}
+
+func Test_EmptyTable(test *testing.T) {
+	var writable map[string]interface{} = mapCopy(writableUser)
+	writable["id"] = uuid.New().String()
+
+	var err error
+	if err = WriteUser(writable); err != nil {
+		test.Fatal(err)
+	}
+
+	if err = EmptyTable(USER_TABLE); err != nil {
+		test.Fatal(err)
+	}
+
+	var exists bool
+	if _, exists, err = ReadSingleUser(writable["id"].(string)); err != nil {
+		test.Fatal(err)
+	}
+
+	if exists {
+		test.Errorf("table %s was not emptied!", USER_TABLE)
+	}
 }
