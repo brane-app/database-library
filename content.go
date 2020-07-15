@@ -121,6 +121,8 @@ func ReadAuthorContent(ID string, offset, count int) (content []monketype.Conten
  * 		get tags:	SELECT tag FROM TAG_TABLE WHERE id=ID
  */
 func getTags(ID string) (tags []string, err error) {
+	tags = make([]string, 0)
+
 	var statement string = "SELECT tag FROM " + TAG_TABLE + " WHERE id=?"
 	var rows *sqlx.Rows
 	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
@@ -149,21 +151,26 @@ func getTags(ID string) (tags []string, err error) {
  * 		get tags: SELECT id, tag FROM TAG_TABLE WHERE id IN (IDs...)
  */
 func getManyTags(IDs []string) (tags map[string][]string, err error) {
-	if len(IDs) < 1 {
+	var size int = len(IDs)
+	if size < 1 {
 		return
 	}
 
-	var statement string = "SELECT id, tag FROM " + TAG_TABLE + " WHERE id IN (" + manyParamString("?", len(IDs)) + ")"
+	tags = make(map[string][]string, size)
+	var id string
+	for _, id = range IDs {
+		tags[id] = make([]string, 0)
+	}
 
+	var statement string = "SELECT id, tag FROM " + TAG_TABLE + " WHERE id IN (" + manyParamString("?", len(IDs)) + ")"
 	var rows *sql.Rows
 	if rows, err = database.Query(statement, interfaceStrings(IDs...)...); err != nil || rows == nil {
 		return
 	}
 
 	defer rows.Close()
-	tags = make(map[string][]string, len(IDs))
 
-	var id, tag string
+	var tag string
 	for rows.Next() {
 		if err = rows.Scan(&id, &tag); err != nil {
 			break

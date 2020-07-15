@@ -165,6 +165,31 @@ func Test_ReadSingleContent(test *testing.T) {
 	contentOK(test, modified, content)
 }
 
+func Test_ReadSingleContent_notags(test *testing.T) {
+	var modified map[string]interface{} = mapCopy(writableContent)
+	modified["id"] = uuid.New().String()
+	modified["tags"] = []string{}
+
+	WriteContent(modified)
+
+	var content monketype.Content = monketype.Content{}
+	var exists bool
+	var err error
+	if content, exists, err = ReadSingleContent(modified["id"].(string)); err != nil {
+		test.Fatal(err)
+	}
+
+	if !exists {
+		test.Errorf("content of id %s does not exist!", modified["id"])
+	}
+
+	contentOK(test, modified, content)
+
+	if content.Tags == nil {
+		test.Errorf("tags for %s are nil instead of empty!", content.ID)
+	}
+}
+
 func Test_ReadSingleContent_ManyTags(test *testing.T) {
 	var modified map[string]interface{} = mapCopy(writableContent)
 	modified["id"] = uuid.New().String()
@@ -240,6 +265,45 @@ func Test_ReadManyContent(test *testing.T) {
 		suffix = size - index + 12
 		if single.ID != "many_"+strconv.Itoa(suffix) {
 			test.Errorf("ID %s does not have suffix %d!", single.ID, suffix)
+		}
+	}
+}
+
+func Test_ReadManyContent_notags(test *testing.T) {
+	EmptyTable(CONTENT_TABLE)
+
+	var err error
+	var many int = 2
+	if err = populate(many); err != nil {
+		test.Fatal(err)
+	}
+
+	var modified map[string]interface{} = mapCopy(writableContent)
+	modified["id"] = uuid.New().String()
+	modified["tags"] = []string{}
+
+	WriteContent(modified)
+
+	var offset, count int = 0, 3
+
+	var content []monketype.Content
+	var size int
+	if content, size, err = ReadManyContent(offset, count); err != nil {
+		test.Fatal(err)
+	}
+
+	if size != count {
+		test.Errorf("did not get enough posts! have: %d, want: %d", size, count)
+	}
+
+	if len(content) != size {
+		test.Errorf("content size %d (%+v) does not match size %d!", len(content), content, size)
+	}
+
+	var single monketype.Content
+	for _, single = range content {
+		if single.Tags == nil {
+			test.Errorf("%s has nil tags!", single.ID)
 		}
 	}
 }
