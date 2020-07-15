@@ -130,3 +130,29 @@ func Test_DeleteUser(test *testing.T) {
 		test.Errorf("user %s exists after being deleted!", mod["id"])
 	}
 }
+
+func Test_IncrementPostCount(test *testing.T) {
+	var id string = uuid.New().String()
+
+	var writable map[string]interface{} = mapCopy(writableUser)
+	writable["id"] = id
+
+	var err error
+	if err = WriteUser(writable); err != nil {
+		test.Fatal(err)
+	}
+
+	if err = IncrementPostCount(id); err != nil {
+		test.Fatal(err)
+	}
+
+	var fetched monketype.User
+	if fetched, _, err = ReadSingleUser(id); err != nil {
+		test.Fatal(err)
+	}
+
+	var count int = int(writable["post_count"].(float64))
+	if fetched.PostCount != count+1 {
+		test.Errorf("post count not incremented! %d -> %d", count, fetched.PostCount)
+	}
+}

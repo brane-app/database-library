@@ -79,3 +79,14 @@ func ReadSingleUserNick(nick string) (user monketype.User, exists bool, err erro
 	user, exists, err = readSingleUserKey("nick", nick)
 	return
 }
+
+func modifyNamedCount(ID, key string, diff int) (err error) {
+	var statement string = "UPDATE " + USER_TABLE + " SET " + key + "=" + key + "+? WHERE id=?"
+	_, err = database.Exec(statement, diff, ID)
+	return
+}
+
+func IncrementPostCount(ID string) (err error) {
+	err = modifyNamedCount(ID, "post_count", 1)
+	return
+}
