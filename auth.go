@@ -32,6 +32,12 @@ func randomString(size int) (generated string, err error) {
 	return
 }
 
+/**
+ * Create a secret for some user of id `ID`
+ * Any existing secret for that user is destroyed
+ * Done in one query:
+ * 		update secret 	REPLACE INTO SECRET_TABLE (id, secret) VALUES ID, new_secret
+ */
 func CreateSecret(ID string) (secret string, err error) {
 	var bytes []byte
 	if bytes, err = randomBytes(SECRET_LENGTH); err != nil {
@@ -46,6 +52,11 @@ func CreateSecret(ID string) (secret string, err error) {
 	return
 }
 
+/**
+ * Check that a secret `secret` for some user of id `ID` matches
+ * Done in one query:
+ * 		read secret: 	SELECT secret FROM SECRET_TABLE WHERE id=ID LIMIT 1
+ */
 func CheckSecret(ID, secret string) (valid bool, err error) {
 	var statement string = "SELECT secret FROM " + SECRET_TABLE + " WHERE id=? LIMIT 1"
 	var bytes []byte
@@ -62,12 +73,23 @@ func CheckSecret(ID, secret string) (valid bool, err error) {
 	return
 }
 
+/**
+ * Revoke the secret of some user of id `ID`
+ * Done in one query:
+ * 		delete row: 	DELETE FROM SECRET_TABLE WHERE id=ID LIMIT 1
+ */
 func RevokeSecretOf(ID string) (err error) {
 	var statement string = "DELETE FROM " + SECRET_TABLE + " WHERE id=? LIMIT 1"
 	_, err = database.Exec(statement, ID)
 	return
 }
 
+/**
+ * Create a token for some user of id `ID` that expires in 24 hours
+ * Any existing token for that user is destroyed
+ * Done in one query:
+ * 		update secret 	REPLACE INTO TOKEN_TABLE (id, token, created) VALUES ID, new_token, now
+ */
 func CreateToken(ID string) (token string, expires int64, err error) {
 	var bytes []byte
 	if bytes, err = randomBytes(TOKEN_LENGTH); err != nil {
@@ -83,6 +105,12 @@ func CreateToken(ID string) (token string, expires int64, err error) {
 	return
 }
 
+/**
+ * Read information about some token `token`
+ * Returns who it belongs to, and whether or not it's valid
+ * done in one query:
+ * 		read token: SELECT id, created FROM TOKEN_TABLE WHERE token=? LIMIT 1
+ */
 func ReadTokenStat(token string) (owner string, valid bool, err error) {
 	var bytes []byte
 	if bytes, err = base64.URLEncoding.DecodeString(token); err != nil {
@@ -111,6 +139,11 @@ func ReadTokenStat(token string) (owner string, valid bool, err error) {
 	return
 }
 
+/**
+ * Revoke some token `token`
+ * Done in one query:
+ * 		delete row: 	DELETE FROM TOKEN_TABLE WHERE token=token LIMIT 1
+ */
 func RevokeToken(token string) (err error) {
 	var bytes []byte
 	if bytes, err = base64.URLEncoding.DecodeString(token); err != nil {
@@ -122,12 +155,22 @@ func RevokeToken(token string) (err error) {
 	return
 }
 
+/**
+ * Revoke the token of some user of id `ID`
+ * Done in one query:
+ * 		delete row: 	DELETE FROM TOKEN_TABLE WHERE id=ID LIMIT 1
+ */
 func RevokeTokenOf(ID string) (err error) {
 	var statement string = "DELETE FROM " + TOKEN_TABLE + " WHERE id=?"
 	_, err = database.Exec(statement, ID)
 	return
 }
 
+/**
+ * Check that password `password` matches the hash for user of id `ID`
+ * Done in one query:
+ *  		read hash: 		SELECT hash FROM AUTH_TABLE WHERE id=ID LIMIT 1
+ */
 func CheckPassword(ID, password string) (valid bool, err error) {
 	var statement string = "SELECT hash FROM " + AUTH_TABLE + " WHERE id=? LIMIT 1"
 	var hash []byte
@@ -144,6 +187,11 @@ func CheckPassword(ID, password string) (valid bool, err error) {
 	return
 }
 
+/**
+ * Set a password `password` for some user of id `ID`
+ * Done in one query:
+ * 		write row:		REPLACE INTO AUTH_TABLE (id, hash) VALUES (ID, hash(password))
+ */
 func SetPassword(ID, password string) (err error) {
 	var hash []byte
 	if hash, err = bcrypt.GenerateFromPassword([]byte(password), BCRYPT_ITERS); err != nil {

@@ -81,6 +81,12 @@ const (
 	REPORT_TABLE       = "reports"
 )
 
+/**
+ * Connect to a database, given a connection string
+ * If the connection fails a ping, this function wil panic with the err
+ * The conenction string should look something like
+ * user:pass@tcp(addr)/table
+ */
 func Connect(address string) {
 	var err error
 	if database, err = sqlx.Open("mysql", address); err != nil {
