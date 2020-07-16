@@ -55,6 +55,17 @@ var (
 			subscription CHAR(36) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
 			CONSTRAINT no_dupe_subscriptions UNIQUE(subscriber, subscription)`,
+		BAN_TABLE: `
+			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
+			banned CHAR(36) NOT NULL,
+			banner CHAR(36) NOT NULL,
+			expires BIGINT UNSIGNED NOT NULL,
+			reason CHAR(255)`,
+		REPORT_TABLE: `
+			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
+			reporter CHAR(36) NOT NULL,
+			reported CHAR(36) NOT NULL,
+			reason CHAR(255)`,
 	}
 )
 
@@ -66,6 +77,8 @@ const (
 	SECRET_TABLE       = "secret"
 	TAG_TABLE          = "tags"
 	SUBSCRIPTION_TABLE = "subs"
+	BAN_TABLE          = "bans"
+	REPORT_TABLE       = "reports"
 )
 
 func Connect(address string) {
