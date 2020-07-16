@@ -86,6 +86,11 @@ func modifyNamedCount(ID, key string, diff int) (err error) {
 	return
 }
 
+/**
+ * Increment the post count of user of id `ID` by one
+ * Done in one query
+ * 		increment: UPDATE USER_TABLE SET post_count=post_count+1 WHERE id=ID
+ */
 func IncrementPostCount(ID string) (err error) {
 	err = modifyNamedCount(ID, "post_count", 1)
 	return

@@ -132,16 +132,19 @@ func Test_DeleteUser(test *testing.T) {
 }
 
 func Test_IncrementPostCount(test *testing.T) {
-	var id string = uuid.New().String()
-
-	var writable map[string]interface{} = mapCopy(writableUser)
-	writable["id"] = id
+	var writable map[string]interface{} = monketype.NewUser("increment", "", "i@monke.io").Map()
+	var unchanged map[string]interface{} = monketype.NewUser("unchanged", "", "u@monke.io").Map()
 
 	var err error
 	if err = WriteUser(writable); err != nil {
 		test.Fatal(err)
 	}
 
+	if err = WriteUser(unchanged); err != nil {
+		test.Fatal(err)
+	}
+
+	var id string = writable["id"].(string)
 	if err = IncrementPostCount(id); err != nil {
 		test.Fatal(err)
 	}
@@ -154,5 +157,14 @@ func Test_IncrementPostCount(test *testing.T) {
 	var count int = int(writable["post_count"].(float64))
 	if fetched.PostCount != count+1 {
 		test.Errorf("post count not incremented! %d -> %d", count, fetched.PostCount)
+	}
+
+	id = unchanged["id"].(string)
+	if fetched, _, err = ReadSingleUser(id); err != nil {
+		test.Fatal(err)
+	}
+
+	if fetched.PostCount != count {
+		test.Errorf("post count also affected %s!", id)
 	}
 }
