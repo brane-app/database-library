@@ -57,15 +57,17 @@ var (
 			CONSTRAINT no_dupe_subscriptions UNIQUE(subscriber, subscription)`,
 		BAN_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
-			banned CHAR(36) NOT NULL,
 			banner CHAR(36) NOT NULL,
+			banned CHAR(36) NOT NULL,
+			reason CHAR(255),
 			expires BIGINT UNSIGNED NOT NULL,
-			reason CHAR(255)`,
+			forever BOOLEAN`,
 		REPORT_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			reporter CHAR(36) NOT NULL,
 			reported CHAR(36) NOT NULL,
-			reason CHAR(255)`,
+			reason CHAR(255),
+			created BIGINT UNSIGNED NOT NULL`,
 	}
 )
 
