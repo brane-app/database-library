@@ -61,6 +61,7 @@ var (
 			banned CHAR(36) NOT NULL,
 			reason CHAR(255),
 			expires BIGINT UNSIGNED NOT NULL,
+			created BIGINT UNSIGNED NOT NULL,
 			forever BOOLEAN`,
 		REPORT_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
