@@ -68,7 +68,8 @@ var (
 			reporter CHAR(36) NOT NULL,
 			reported CHAR(36) NOT NULL,
 			reason CHAR(255),
-			created BIGINT UNSIGNED NOT NULL`,
+			created BIGINT UNSIGNED NOT NULL,
+			resolved BOOLEAN`,
 	}
 )
 
