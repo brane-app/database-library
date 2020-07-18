@@ -34,7 +34,9 @@ var (
 			subscriber_count BIGINT UNSIGNED NOT NULL,
 			subscription_count BIGINT UNSIGNED NOT NULL,
 			post_count BIGINT UNSIGNED NOT NULL,
-			created BIGINT UNSIGNED NOT NULL`,
+			created BIGINT UNSIGNED NOT NULL,
+			moderator BOOLEAN NOT NULL,
+			admin BOOLEAN NOT NULL`,
 		AUTH_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			hash BINARY(60) NOT NULL`,
