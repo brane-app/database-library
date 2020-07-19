@@ -95,3 +95,39 @@ func IncrementPostCount(ID string) (err error) {
 	err = modifyNamedCount(ID, "post_count", 1)
 	return
 }
+
+func IsModerator(ID string) (moderator bool, err error) {
+	var admin bool
+	var statement string = "SELECT admin, moderator FROM " + USER_TABLE + " WHERE id=?"
+	if err = database.QueryRowx(statement, ID).Scan(&admin, &moderator); err != nil {
+		if err == sql.ErrNoRows {
+			err = nil
+		}
+
+		return
+	}
+
+	moderator = moderator || admin
+	return
+}
+
+func IsAdmin(ID string) (admin bool, err error) {
+	var statement string = "SELECT admin FROM " + USER_TABLE + " WHERE id=?"
+	if err = database.QueryRowx(statement, ID).Scan(&admin); err == sql.ErrNoRows {
+		err = nil
+	}
+
+	return
+}
+
+func SetModerator(ID string, state bool) (err error) {
+	var statement string = "UPDATE " + USER_TABLE + " SET moderator=? WHERE id=?"
+	_, err = database.Exec(statement, state, ID)
+	return
+}
+
+func SetAdmin(ID string, state bool) (err error) {
+	var statement string = "UPDATE " + USER_TABLE + " SET admin=? WHERE id=?"
+	_, err = database.Exec(statement, state, ID)
+	return
+}

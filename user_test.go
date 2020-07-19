@@ -168,3 +168,145 @@ func Test_IncrementPostCount(test *testing.T) {
 		test.Errorf("post count also affected %s!", id)
 	}
 }
+
+func Test_IsModerator(test *testing.T) {
+	var moderator monketype.User = monketype.NewUser("mod", "", "mod@imonke.io")
+	moderator.Moderator = true
+
+	defer DeleteUser(moderator.ID)
+	WriteUser(moderator.Map())
+
+	var is_mod bool
+	var err error
+	if is_mod, err = IsModerator(moderator.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if !is_mod {
+		test.Errorf("%s is not a moderator", moderator.ID)
+	}
+
+}
+
+func Test_IsModerator_nomod(test *testing.T) {
+	var moderator monketype.User = monketype.NewUser("mod", "", "mod@imonke.io")
+
+	defer DeleteUser(moderator.ID)
+	WriteUser(moderator.Map())
+
+	var is_mod bool
+	var err error
+	if is_mod, err = IsModerator(moderator.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if is_mod {
+		test.Errorf("%s is a moderator", moderator.ID)
+	}
+}
+
+func Test_IsAdmin(test *testing.T) {
+	var moderator monketype.User = monketype.NewUser("admin", "", "admin@imonke.io")
+	moderator.Admin = true
+
+	defer DeleteUser(moderator.ID)
+	WriteUser(moderator.Map())
+
+	var is_mod bool
+	var err error
+	if is_mod, err = IsAdmin(moderator.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if !is_mod {
+		test.Errorf("%s is not a moderator", moderator.ID)
+	}
+
+}
+
+func Test_IsAdmin_nomod(test *testing.T) {
+	var moderator monketype.User = monketype.NewUser("admin", "", "admin@imonke.io")
+
+	defer DeleteUser(moderator.ID)
+	WriteUser(moderator.Map())
+
+	var is_mod bool
+	var err error
+	if is_mod, err = IsAdmin(moderator.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if is_mod {
+		test.Errorf("%s is a moderator", moderator.ID)
+	}
+}
+
+func Test_SetModerator(test *testing.T) {
+	var moderator monketype.User = monketype.NewUser("mod", "", "mod@imonke.io")
+
+	defer DeleteUser(moderator.ID)
+	var err error
+	if err = WriteUser(moderator.Map()); err != nil {
+		test.Fatal(err)
+	}
+
+	if err = SetAdmin(moderator.ID, true); err != nil {
+		test.Fatal(err)
+	}
+
+	var is_mod bool
+	if is_mod, err = IsModerator(moderator.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if !is_mod {
+		test.Errorf("%s was not made a moderator", moderator.ID)
+	}
+
+	if err = SetAdmin(moderator.ID, false); err != nil {
+		test.Fatal(err)
+	}
+
+	if is_mod, err = IsModerator(moderator.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if is_mod {
+		test.Errorf("%s is still a moderator", moderator.ID)
+	}
+}
+
+func Test_SetAdmin(test *testing.T) {
+	var admin monketype.User = monketype.NewUser("mod", "", "mod@imonke.io")
+
+	defer DeleteUser(admin.ID)
+	var err error
+	if err = WriteUser(admin.Map()); err != nil {
+		test.Fatal(err)
+	}
+
+	if err = SetAdmin(admin.ID, true); err != nil {
+		test.Fatal(err)
+	}
+
+	var is_mod bool
+	if is_mod, err = IsAdmin(admin.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if !is_mod {
+		test.Errorf("%s was not made a admin", admin.ID)
+	}
+
+	if err = SetAdmin(admin.ID, false); err != nil {
+		test.Fatal(err)
+	}
+
+	if is_mod, err = IsAdmin(admin.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if is_mod {
+		test.Errorf("%s is still a admin", admin.ID)
+	}
+}
