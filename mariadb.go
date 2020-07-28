@@ -69,9 +69,9 @@ var (
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			reporter CHAR(36) NOT NULL,
 			reported CHAR(36) NOT NULL,
-			reason CHAR(255),
+			reason CHAR(255) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
-			resolved BOOLEAN`,
+			resolved BOOLEAN NOT NULL`,
 	}
 )
 
