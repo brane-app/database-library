@@ -20,8 +20,6 @@ func WriteBan(ban map[string]interface{}) (err error) {
 func readSingleBanKey(key, query string) (ban monketype.Ban, exists bool, err error) {
 	var statement string = "SELECT * FROM " + BAN_TABLE + " WHERE " + key + "=? LIMIT 1"
 	if err = database.QueryRowx(statement, query).StructScan(&ban); err != nil {
-		exists = false
-
 		if err == sql.ErrNoRows {
 			err = nil
 		}

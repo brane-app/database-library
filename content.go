@@ -27,11 +27,7 @@ func WriteContent(content map[string]interface{}) (err error) {
 	var statement string
 	var values []interface{}
 	statement, values = makeSQLInsertable(CONTENT_TABLE, copied)
-
-	var rows *sql.Rows
-	if rows, err = database.Query(statement, values...); rows != nil {
-		rows.Close()
-	}
+	_, err = database.Exec(statement, values...)
 	return
 }
 
@@ -57,24 +53,15 @@ func DeleteContent(ID string) (err error) {
  */
 func ReadSingleContent(ID string) (content monketype.Content, exists bool, err error) {
 	var statement string = "SELECT * FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
-
-	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
+	if err = database.QueryRowx(statement, ID).StructScan(&content); err != nil {
+		if err == sql.ErrNoRows {
+			err = nil
+		}
 		return
 	}
 
-	defer rows.Close()
-
-	if exists = rows.Next(); !exists {
-		return
-	}
-
-	if err = rows.StructScan(&content); err != nil {
-		return
-	}
-
+	exists = true
 	content.Tags, err = getTags(ID)
-
 	return
 }
 
@@ -184,11 +171,8 @@ func getManyTags(IDs []string) (tags map[string][]string, err error) {
 
 /**
  * Updates the tags of a post
- * Uses 2 queries
- * 		delete missing: 	DELETE FROM TAG_TABLE WHERE id=ID AND tag NOT IN (tags...)
- * 		update tags:		REPLACE INTO TAG_TABLE (id, tag, created) VALUES (ID, tags..., now)
- * Or if there are no tags
- * 		queries from dropTags
+ * Done in two queries if there are tags
+ * Or one if there are no tags
  */
 func setTags(ID string, tags []string) (err error) {
 	var length int = len(tags)
@@ -202,13 +186,9 @@ func setTags(ID string, tags []string) (err error) {
 		[]interface{}{ID},
 		interfaceStrings(tags...)...,
 	)
-
-	var rows *sql.Rows
-	if rows, err = database.Query(statement, faces...); err != nil || rows == nil {
+	if _, err = database.Exec(statement, faces...); err != nil {
 		return
 	}
-
-	defer rows.Close()
 
 	var now int64 = time.Now().Unix()
 	var insertable []interface{} = make([]interface{}, length*3)
@@ -222,19 +202,15 @@ func setTags(ID string, tags []string) (err error) {
 	}
 
 	statement = "REPLACE INTO " + TAG_TABLE + " (id, tag, created) VALUES " + manyParamString("(?, ?, ?)", length)
-	_, err = database.Query(statement, insertable...)
+	_, err = database.Exec(statement, insertable...)
 	return
 }
 
 /**
  * Deletes all of the tags for some post
- * Uses 1 query:
- * 		DELETE FROM TAG_TABLE WHERE id=ID
+ * Done in one query
  */
 func dropTags(ID string) (err error) {
-	var rows *sql.Rows
-	if rows, err = database.Query("DELETE FROM "+TAG_TABLE+" WHERE id=?", ID); rows != nil {
-		rows.Close()
-	}
+	_, err = database.Exec("DELETE FROM "+TAG_TABLE+" WHERE id=?", ID)
 	return
 }

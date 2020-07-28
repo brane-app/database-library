@@ -63,7 +63,6 @@ func CheckSecret(ID, secret string) (valid bool, err error) {
 	if err = database.QueryRowx(statement, ID).Scan(&bytes); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
-			valid = false
 		}
 
 		return
@@ -115,7 +114,6 @@ func ReadTokenStat(token string) (owner string, valid bool, err error) {
 	var bytes []byte
 	if bytes, err = base64.URLEncoding.DecodeString(token); err != nil {
 		err = nil
-		valid = false
 		return
 	}
 
@@ -177,7 +175,6 @@ func CheckPassword(ID, password string) (valid bool, err error) {
 	if err = database.QueryRowx(statement, ID).Scan(&hash); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
-			valid = false
 		}
 
 		return

@@ -35,8 +35,6 @@ func DeleteUser(ID string) (err error) {
 func readSingleUserKey(key, query string) (user monketype.User, exists bool, err error) {
 	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE " + key + "=? LIMIT 1"
 	if err = database.QueryRowx(statement, query).StructScan(&user); err != nil {
-		exists = false
-
 		if err == sql.ErrNoRows {
 			err = nil
 		}
