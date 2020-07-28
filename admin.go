@@ -49,7 +49,7 @@ func ReadSingleBan(ID string) (ban monketype.Ban, exists bool, err error) {
 func ReadBansOfUser(ID string, offset, count int) (bans []monketype.Ban, size int, err error) {
 	var statement string = "SELECT * FROM " + BAN_TABLE + " WHERE banned=? ORDER BY created DESC LIMIT ?, ?"
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID, size, offset); err != nil || rows == nil {
+	if rows, err = database.Queryx(statement, ID, offset, count); err != nil || rows == nil {
 		return
 	}
 
@@ -59,6 +59,7 @@ func ReadBansOfUser(ID string, offset, count int) (bans []monketype.Ban, size in
 	size = 0
 	for rows.Next() {
 		rows.StructScan(&bans[size])
+		size++
 	}
 
 	return
