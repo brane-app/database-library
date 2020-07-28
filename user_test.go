@@ -91,6 +91,48 @@ func Test_ReadSingleUser(test *testing.T) {
 	userOK(test, modified, user)
 }
 
+func Test_ReadSingleUserNick(test *testing.T) {
+	var modified map[string]interface{} = mapCopy(writableUser)
+	modified["id"] = uuid.New().String()
+	modified["nick"] = "readme"
+
+	WriteUser(modified)
+
+	var user monketype.User
+	var exists bool
+	var err error
+	if user, exists, err = ReadSingleUserNick(modified["nick"].(string)); err != nil {
+		test.Fatal(err)
+	}
+
+	if !exists {
+		test.Errorf("user of id %s does not exist!", modified["id"])
+	}
+
+	userOK(test, modified, user)
+}
+
+func Test_ReadSingleUserEmail(test *testing.T) {
+	var modified map[string]interface{} = mapCopy(writableUser)
+	modified["id"] = uuid.New().String()
+	modified["email"] = "read@me.io"
+
+	WriteUser(modified)
+
+	var user monketype.User
+	var exists bool
+	var err error
+	if user, exists, err = ReadSingleUserEmail(modified["email"].(string)); err != nil {
+		test.Fatal(err)
+	}
+
+	if !exists {
+		test.Errorf("user of id %s does not exist!", modified["id"])
+	}
+
+	userOK(test, modified, user)
+}
+
 func Test_ReadSingleUser_NotExists(test *testing.T) {
 	var id string = uuid.New().String()
 
@@ -205,6 +247,18 @@ func Test_IsModerator_nomod(test *testing.T) {
 	}
 }
 
+func Test_IsModerator_nobody(test *testing.T) {
+	var is_mod bool
+	var err error
+	if is_mod, err = IsModerator(uuid.New().String()); err != nil {
+		test.Fatal(err)
+	}
+
+	if is_mod {
+		test.Errorf("nobody is a moderator")
+	}
+}
+
 func Test_IsAdmin(test *testing.T) {
 	var moderator monketype.User = monketype.NewUser("admin", "", "admin@imonke.io")
 	moderator.Admin = true
@@ -241,6 +295,18 @@ func Test_IsAdmin_nomod(test *testing.T) {
 	}
 }
 
+func Test_IsAdmin_nobody(test *testing.T) {
+	var is_mod bool
+	var err error
+	if is_mod, err = IsAdmin(uuid.New().String()); err != nil {
+		test.Fatal(err)
+	}
+
+	if is_mod {
+		test.Errorf("nobody is a moderator")
+	}
+}
+
 func Test_SetModerator(test *testing.T) {
 	var moderator monketype.User = monketype.NewUser("mod", "", "mod@imonke.io")
 
@@ -250,7 +316,7 @@ func Test_SetModerator(test *testing.T) {
 		test.Fatal(err)
 	}
 
-	if err = SetAdmin(moderator.ID, true); err != nil {
+	if err = SetModerator(moderator.ID, true); err != nil {
 		test.Fatal(err)
 	}
 
@@ -263,7 +329,7 @@ func Test_SetModerator(test *testing.T) {
 		test.Errorf("%s was not made a moderator", moderator.ID)
 	}
 
-	if err = SetAdmin(moderator.ID, false); err != nil {
+	if err = SetModerator(moderator.ID, false); err != nil {
 		test.Fatal(err)
 	}
 

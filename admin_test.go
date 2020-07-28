@@ -53,6 +53,18 @@ func Test_ReadSingleBan(test *testing.T) {
 	}
 }
 
+func Test_ReadSingleBan_nobody(test *testing.T) {
+	var exists bool
+	var err error
+	if _, exists, err = ReadSingleBan(uuid.New().String()); err != nil {
+		test.Fatal(err)
+	}
+
+	if exists {
+		test.Errorf("random uuid got some ban")
+	}
+}
+
 func Test_IsBanned_OldAndForever(test *testing.T) {
 	var set banSet
 	var sets []banSet = []banSet{
@@ -89,6 +101,50 @@ func Test_IsBanned_OldAndForever(test *testing.T) {
 		if banned != set.Want {
 			test.Errorf("Ban state is %t!\n%#v", banned, set.Ban)
 		}
+	}
+}
+
+func Test_ReadBansOfUser(test *testing.T) {
+	EmptyTable(BAN_TABLE)
+	var banned string = uuid.New().String()
+
+	var size_bans, index int = 20, 0
+	var bans []monketype.Ban = make([]monketype.Ban, size_bans)
+	for ; index != size_bans; index++ {
+		bans[index] = monketype.NewBan(uuid.New().String(), banned, "", 0, true)
+		bans[index].Created = bans[index].Created + int64(100+size_bans-index)
+		WriteBan(bans[index].Map())
+		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+	}
+
+	var fetched []monketype.Ban
+	var offset, count, size int = 7, 9, 0
+	var err error
+	if fetched, size, err = ReadBansOfUser(banned, offset, count); err != nil {
+		test.Fatal(err)
+	}
+
+	if size != count {
+		test.Errorf("read %d bans, expected %d\n%#v", size, count, fetched)
+	}
+
+	if len(fetched) != size {
+		test.Errorf("actual size %d does not match size %d", len(fetched), size)
+	}
+
+	var now, last int64 = 0, fetched[0].Created
+	var ban monketype.Ban
+	for index, ban = range fetched[1:] {
+		if ban.ID != bans[1+index+offset].ID {
+			test.Errorf("ban mismatch: \nhave: %#v, \nwant: %#v", ban, bans[1+index+offset])
+		}
+
+		now = ban.Created
+		if now > last {
+			test.Errorf("Fail at %d: %d < %d", index, now, last)
+		}
+
+		last = now
 	}
 }
 
@@ -167,7 +223,7 @@ func Test_ReadManyUnresolvedReport(test *testing.T) {
 	for index = 0; index != size_unresolved; index++ {
 		unresolved[index] = monketype.NewReport(uuid.New().String(), uuid.New().String(), "")
 		unresolved[index].Resolved = true
-		unresolved[index].Created = unresolved[index].Created + int64(size_unresolved-index)
+		unresolved[index].Created = unresolved[index].Created + int64(100+size_unresolved-index)
 		WriteReport(unresolved[index].Map())
 	}
 

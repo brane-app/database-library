@@ -78,6 +78,18 @@ func Test_CheckPassword_wrong(test *testing.T) {
 	}
 }
 
+func Test_CheckPassword_nobody(test *testing.T) {
+	var ok bool
+	var err error
+	if ok, err = CheckPassword(uuid.New().String(), "password"); err != nil {
+		test.Fatal(err)
+	}
+
+	if ok {
+		test.Errorf("password for random uuid is ok!")
+	}
+}
+
 func Test_CreateSecret(test *testing.T) {
 	var id string = uuid.New().String()
 
