@@ -91,3 +91,113 @@ func Test_IsBanned_OldAndForever(test *testing.T) {
 		}
 	}
 }
+
+func Test_WriteReport(test *testing.T) {
+	var reporter string = uuid.New().String()
+	var reported string = uuid.New().String()
+	var report monketype.Report = monketype.NewReport(reporter, reported, "happens to be that smelly && stinky == True")
+
+	var err error
+	if err = WriteReport(report.Map()); err != nil {
+		test.Fatal(err)
+	}
+
+	var exists bool
+	if _, exists, err = ReadSingleReport(report.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if !exists {
+		test.Errorf("report %s does not exist", report.ID)
+	}
+}
+
+func Test_ReadReport(test *testing.T) {
+	var reporter string = uuid.New().String()
+	var reported string = uuid.New().String()
+	var report monketype.Report = monketype.NewReport(reporter, reported, "Called me the J word (javascript developer)")
+	WriteReport(report.Map())
+
+	var fetched monketype.Report
+	var exists bool
+	var err error
+	if fetched, exists, err = ReadSingleReport(report.ID); err != nil {
+		test.Fatal(err)
+	}
+
+	if !exists {
+		test.Errorf("report %s does not exist", report.ID)
+	}
+
+	var mapped map[string]interface{} = fetched.Map()
+
+	var key string
+	var value interface{}
+	for key, value = range report.Map() {
+		if mapped[key] != value {
+			test.Errorf("mismatch at %s! have: %#v, want: %#v", key, value, mapped[key])
+		}
+	}
+}
+
+func Test_ReadReport_notExists(test *testing.T) {
+	var id string = uuid.New().String()
+
+	var fetched monketype.Report
+	var exists bool
+	var err error
+	if _, exists, err = ReadSingleReport(id); err != nil {
+		test.Fatal(err)
+	}
+
+	if exists {
+		test.Errorf("id %s references a report %#v", id, fetched)
+	}
+}
+
+func Test_ReadManyUnresolvedReport(test *testing.T) {
+	EmptyTable(REPORT_TABLE)
+	var index int
+	var size_resolved, size_unresolved int = 10, 20
+	for index = 0; index != size_resolved; index++ {
+		WriteReport(monketype.NewReport(uuid.New().String(), uuid.New().String(), "").Map())
+	}
+
+	var unresolved []monketype.Report = make([]monketype.Report, size_unresolved)
+	for index = 0; index != size_unresolved; index++ {
+		unresolved[index] = monketype.NewReport(uuid.New().String(), uuid.New().String(), "")
+		unresolved[index].Resolved = true
+		unresolved[index].Created = unresolved[index].Created + int64(size_unresolved-index)
+		WriteReport(unresolved[index].Map())
+	}
+
+	var fetched []monketype.Report
+	var offset, count, size int = 3, 7, 0
+	var err error
+	if fetched, size, err = ReadManyUnresolvedReport(offset, count); err != nil {
+		test.Fatal(err)
+	}
+
+	if size != count {
+		test.Errorf("read %d reports, expected %d\n%#v", size, count, fetched)
+	}
+
+	if len(fetched) != size {
+		test.Errorf("actual size %d does not match size %d", len(fetched), size)
+	}
+
+	var now, last int64 = 0, fetched[0].Created
+	var report monketype.Report
+	for index, report = range fetched[1:] {
+		if report.ID != unresolved[1+index+offset].ID {
+			test.Errorf("report mismatch: \nhave: %#v, \nwant: %#v", report, unresolved[1+index+offset])
+		}
+
+		now = report.Created
+		if now > last {
+			test.Errorf("Fail at %d: %d < %d", index, now, last)
+		}
+
+		last = now
+	}
+}

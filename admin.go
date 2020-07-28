@@ -85,3 +85,45 @@ func IsBanned(ID string) (banned bool, err error) {
 	banned = count != 0
 	return
 }
+
+func WriteReport(report map[string]interface{}) (err error) {
+	var statement string
+	var values []interface{}
+	statement, values = makeSQLInsertable(REPORT_TABLE, report)
+
+	_, err = database.Exec(statement, values...)
+	return
+}
+
+func ReadManyUnresolvedReport(offset, count int) (reports []monketype.Report, size int, err error) {
+	var statement string = "SELECT * FROM " + REPORT_TABLE + " WHERE resolved!=0 ORDER BY created DESC LIMIT ?, ?"
+	var rows *sqlx.Rows
+	if rows, err = database.Queryx(statement, offset, count); err != nil || rows == nil {
+		return
+	}
+
+	defer rows.Close()
+	reports = make([]monketype.Report, count)
+	size = 0
+
+	for rows.Next() {
+		rows.StructScan(&reports[size])
+		size++
+	}
+
+	reports = reports[0:size]
+	return
+}
+
+func ReadSingleReport(ID string) (report monketype.Report, exists bool, err error) {
+	var statement string = "SELECT * FROM " + REPORT_TABLE + " WHERE id=?"
+	if err = database.QueryRowx(statement, ID).StructScan(&report); err != nil {
+		if err == sql.ErrNoRows {
+			err = nil
+		}
+		return
+	}
+
+	exists = true
+	return
+}
