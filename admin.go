@@ -75,11 +75,6 @@ func IsBanned(ID string) (banned bool, err error) {
 	var now int64 = time.Now().Unix()
 	var statement string = "SELECT COUNT(*) FROM " + BAN_TABLE + " WHERE (banned=? AND forever) OR (banned=? AND expires>?)"
 	if err = database.QueryRowx(statement, ID, ID, now).Scan(&count); err != nil {
-		if err == sql.ErrNoRows {
-			err = nil
-		}
-
-		banned = false
 		return
 	}
 
