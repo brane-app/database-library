@@ -86,6 +86,10 @@ func IsBanned(ID string) (banned bool, err error) {
 	return
 }
 
+/**
+ * Create or update a report for some user
+ * Done in one query
+ */
 func WriteReport(report map[string]interface{}) (err error) {
 	var statement string
 	var values []interface{}
@@ -95,6 +99,10 @@ func WriteReport(report map[string]interface{}) (err error) {
 	return
 }
 
+/**
+ * Read a slice of unresolved reports (ie, the mod queue) by order of most recent
+ * Done in one query
+ */
 func ReadManyUnresolvedReport(offset, count int) (reports []monketype.Report, size int, err error) {
 	var statement string = "SELECT * FROM " + REPORT_TABLE + " WHERE resolved!=0 ORDER BY created DESC LIMIT ?, ?"
 	var rows *sqlx.Rows
@@ -115,6 +123,10 @@ func ReadManyUnresolvedReport(offset, count int) (reports []monketype.Report, si
 	return
 }
 
+/**
+ * Lookup single report by it's ID
+ * Done in one query
+ */
 func ReadSingleReport(ID string) (report monketype.Report, exists bool, err error) {
 	var statement string = "SELECT * FROM " + REPORT_TABLE + " WHERE id=?"
 	if err = database.QueryRowx(statement, ID).StructScan(&report); err != nil {
