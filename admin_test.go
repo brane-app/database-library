@@ -151,7 +151,7 @@ func Test_ReadBansOfUser(test *testing.T) {
 func Test_WriteReport(test *testing.T) {
 	var reporter string = uuid.New().String()
 	var reported string = uuid.New().String()
-	var report monketype.Report = monketype.NewReport(reporter, reported, "happens to be that smelly && stinky == True")
+	var report monketype.Report = monketype.NewReport(reporter, reported, "", "happens to be that smelly && stinky == True")
 
 	var err error
 	if err = WriteReport(report.Map()); err != nil {
@@ -171,7 +171,7 @@ func Test_WriteReport(test *testing.T) {
 func Test_ReadReport(test *testing.T) {
 	var reporter string = uuid.New().String()
 	var reported string = uuid.New().String()
-	var report monketype.Report = monketype.NewReport(reporter, reported, "Called me the J word (javascript developer)")
+	var report monketype.Report = monketype.NewReport(reporter, reported, "", "Called me the J word (javascript developer)")
 	WriteReport(report.Map())
 
 	var fetched monketype.Report
@@ -216,12 +216,12 @@ func Test_ReadManyUnresolvedReport(test *testing.T) {
 	var index int
 	var size_resolved, size_unresolved int = 10, 20
 	for index = 0; index != size_resolved; index++ {
-		WriteReport(monketype.NewReport(uuid.New().String(), uuid.New().String(), "").Map())
+		WriteReport(monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "").Map())
 	}
 
 	var unresolved []monketype.Report = make([]monketype.Report, size_unresolved)
 	for index = 0; index != size_unresolved; index++ {
-		unresolved[index] = monketype.NewReport(uuid.New().String(), uuid.New().String(), "")
+		unresolved[index] = monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
 		unresolved[index].Resolved = true
 		unresolved[index].Created = unresolved[index].Created + int64(100+size_unresolved-index)
 		WriteReport(unresolved[index].Map())
