@@ -98,7 +98,7 @@ func WriteReport(report map[string]interface{}) (err error) {
  * Done in one query
  */
 func ReadManyUnresolvedReport(offset, count int) (reports []monketype.Report, size int, err error) {
-	var statement string = "SELECT * FROM " + REPORT_TABLE + " WHERE resolved!=0 ORDER BY created DESC LIMIT ?, ?"
+	var statement string = "SELECT * FROM " + REPORT_TABLE + " WHERE resolved=0 ORDER BY created DESC LIMIT ?, ?"
 	var rows *sqlx.Rows
 	if rows, err = database.Queryx(statement, offset, count); err != nil || rows == nil {
 		return

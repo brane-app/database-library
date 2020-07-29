@@ -213,16 +213,19 @@ func Test_ReadReport_notExists(test *testing.T) {
 
 func Test_ReadManyUnresolvedReport(test *testing.T) {
 	EmptyTable(REPORT_TABLE)
+	var report monketype.Report
 	var index int
 	var size_resolved, size_unresolved int = 10, 20
 	for index = 0; index != size_resolved; index++ {
-		WriteReport(monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "").Map())
+		report = monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
+		report.Resolved = true
+		WriteReport(report.Map())
 	}
 
 	var unresolved []monketype.Report = make([]monketype.Report, size_unresolved)
 	for index = 0; index != size_unresolved; index++ {
 		unresolved[index] = monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
-		unresolved[index].Resolved = true
+		unresolved[index].Resolved = false
 		unresolved[index].Created = unresolved[index].Created + int64(100+size_unresolved-index)
 		WriteReport(unresolved[index].Map())
 	}
@@ -243,7 +246,6 @@ func Test_ReadManyUnresolvedReport(test *testing.T) {
 	}
 
 	var now, last int64 = 0, fetched[0].Created
-	var report monketype.Report
 	for index, report = range fetched[1:] {
 		if report.ID != unresolved[1+index+offset].ID {
 			test.Errorf("report mismatch: \nhave: %#v, \nwant: %#v", report, unresolved[1+index+offset])
