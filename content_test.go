@@ -236,7 +236,7 @@ func Test_ReadSingleContent_NotExists(test *testing.T) {
 	}
 }
 
-func Test_ReadManyContent(test *testing.T) {
+func Test_DEPRECATED_ReadManyContent(test *testing.T) {
 	var err error
 	var many int = 31
 	if err = populate(many); err != nil {
@@ -247,7 +247,7 @@ func Test_ReadManyContent(test *testing.T) {
 
 	var content []monketype.Content
 	var size int
-	if content, size, err = ReadManyContent(offset, count); err != nil {
+	if content, size, err = DEPRECATED_ReadManyContent(offset, count); err != nil {
 		test.Fatal(err)
 	}
 
@@ -269,7 +269,7 @@ func Test_ReadManyContent(test *testing.T) {
 	}
 }
 
-func Test_ReadManyContent_notags(test *testing.T) {
+func Test_DEPRECATED_ReadManyContent_notags(test *testing.T) {
 	EmptyTable(CONTENT_TABLE)
 
 	var err error
@@ -288,7 +288,7 @@ func Test_ReadManyContent_notags(test *testing.T) {
 
 	var content []monketype.Content
 	var size int
-	if content, size, err = ReadManyContent(offset, count); err != nil {
+	if content, size, err = DEPRECATED_ReadManyContent(offset, count); err != nil {
 		test.Fatal(err)
 	}
 
@@ -308,7 +308,7 @@ func Test_ReadManyContent_notags(test *testing.T) {
 	}
 }
 
-func Test_ReadManyContent_Fewer(test *testing.T) {
+func Test_DEPRECATED_ReadManyContent_Fewer(test *testing.T) {
 	var err error
 	if _, err = database.Query("DROP TABLE IF EXISTS " + CONTENT_TABLE); err != nil {
 		test.Fatal(err)
@@ -325,7 +325,7 @@ func Test_ReadManyContent_Fewer(test *testing.T) {
 
 	var content []monketype.Content
 	var size int
-	if content, size, err = ReadManyContent(offset, count); err != nil {
+	if content, size, err = DEPRECATED_ReadManyContent(offset, count); err != nil {
 		test.Fatal(err)
 	}
 
@@ -338,7 +338,7 @@ func Test_ReadManyContent_Fewer(test *testing.T) {
 	}
 }
 
-func Test_ReadAuthorContent(test *testing.T) {
+func Test_DEPRECATED_ReadAuthorContent(test *testing.T) {
 	var err error
 	if err = populate(20); err != nil {
 		test.Fatal(err)
@@ -365,7 +365,7 @@ func Test_ReadAuthorContent(test *testing.T) {
 
 	var content []monketype.Content
 	var size int
-	if content, size, err = ReadAuthorContent(author, offset, many); err != nil {
+	if content, size, err = DEPRECATED_ReadAuthorContent(author, offset, many); err != nil {
 		test.Fatal(err)
 	}
 
