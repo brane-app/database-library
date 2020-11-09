@@ -70,9 +70,9 @@ func ReadSingleContent(ID string) (content monketype.Content, exists bool, err e
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func DEPRECATED_ReadManyContent(offset, count int) (content []monketype.Content, size int, err error) {
+func ReadManyContent(offset, count int) (content []monketype.Content, size int, err error) {
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(DEPRECATED_READ_MANY_CONTENT, offset, count); err != nil || rows == nil {
+	if rows, err = database.Queryx(READ_MANY_CONTENT, offset, count); err != nil || rows == nil {
 		return
 	}
 
@@ -82,14 +82,14 @@ func DEPRECATED_ReadManyContent(offset, count int) (content []monketype.Content,
 }
 
 /**
- * Same as DEPRECATED_ReadManyContent but for some author of id `ID`
+ * Same as ReadManyContent but for some author of id `ID`
  * Uses 2 queries
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func DEPRECATED_ReadAuthorContent(ID string, offset, count int) (content []monketype.Content, size int, err error) {
+func ReadAuthorContent(ID string, offset, count int) (content []monketype.Content, size int, err error) {
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(DEPRECATED_READ_MANY_CONTENT_OF_AUTHOR, ID, offset, count); err != nil || rows == nil {
+	if rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR, ID, offset, count); err != nil || rows == nil {
 		return
 	}
 
