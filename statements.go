@@ -69,12 +69,10 @@ resolution`
 	WRITE_MODERATOR_OF_ID           = "UPDATE " + USER_TABLE + " SET moderator=? WHERE id=?"
 	WRITE_ADMIN_OF_ID               = "UPDATE " + USER_TABLE + " SET admin=? WHERE id=?"
 
-	READ_BAN_OF_ID = "SELECT " + BAN_FIELDS + " from " + BAN_TABLE + " WHERE id=? LIMIT 1"
-	// TODO: use order_index
+	READ_BAN_OF_ID          = "SELECT " + BAN_FIELDS + " from " + BAN_TABLE + " WHERE id=? LIMIT 1"
 	READ_BANS_OF_USER       = "SELECT " + BAN_FIELDS + " FROM " + BAN_TABLE + " WHERE banned=? ORDER BY order_index ASC LIMIT ?, ?"
 	READ_BANS_OF_USER_COUNT = "SELECT COUNT(id) FROM " + BAN_TABLE + " WHERE (banned=? AND forever) OR (banned=? AND expires>?)"
 
-	READ_REPORT_OF_ID = "SELECT " + REPORT_FIELDS + " FROM " + REPORT_TABLE + " WHERE id=?"
-	// TODO: use order_index
+	READ_REPORT_OF_ID       = "SELECT " + REPORT_FIELDS + " FROM " + REPORT_TABLE + " WHERE id=?"
 	READ_REPORTS_UNRESOLVED = "SELECT " + REPORT_FIELDS + " FROM " + REPORT_TABLE + " WHERE resolved=0 ORDER BY created DESC LIMIT ?, ?"
 )
