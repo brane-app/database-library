@@ -38,8 +38,7 @@ func WriteContent(content map[string]interface{}) (err error) {
  * 		queries from: 		dropTags
  */
 func DeleteContent(ID string) (err error) {
-	var statement string = "DELETE FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
-	if _, err = database.Exec(statement, ID); err == nil {
+	if _, err = database.Exec(DELETE_CONTENT_ID, ID); err == nil {
 		err = dropTags(ID)
 	}
 	return
@@ -52,8 +51,7 @@ func DeleteContent(ID string) (err error) {
  * 		get tags:		SELECT tag FROM TAG_TABLE WHERE id=ID
  */
 func ReadSingleContent(ID string) (content monketype.Content, exists bool, err error) {
-	var statement string = "SELECT * FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
-	if err = database.QueryRowx(statement, ID).StructScan(&content); err != nil {
+	if err = database.QueryRowx(READ_CONTENT_ID, ID).StructScan(&content); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
@@ -73,9 +71,8 @@ func ReadSingleContent(ID string) (content monketype.Content, exists bool, err e
  * 		queries from: 	getManyTags
  */
 func DEPRECATED_ReadManyContent(offset, count int) (content []monketype.Content, size int, err error) {
-	var statement string = "SELECT * FROM " + CONTENT_TABLE + " ORDER BY created DESC LIMIT ?, ?"
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, offset, count); err != nil || rows == nil {
+	if rows, err = database.Queryx(DEPRECATED_READ_MANY_CONTENT, offset, count); err != nil || rows == nil {
 		return
 	}
 
@@ -91,9 +88,8 @@ func DEPRECATED_ReadManyContent(offset, count int) (content []monketype.Content,
  * 		queries from: 	getManyTags
  */
 func DEPRECATED_ReadAuthorContent(ID string, offset, count int) (content []monketype.Content, size int, err error) {
-	var statement string = "SELECT * FROM " + CONTENT_TABLE + " WHERE author=? ORDER BY created DESC LIMIT ?, ?"
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID, offset, count); err != nil || rows == nil {
+	if rows, err = database.Queryx(DEPRECATED_READ_MANY_CONTENT_OF_AUTHOR, ID, offset, count); err != nil || rows == nil {
 		return
 	}
 
@@ -108,16 +104,14 @@ func DEPRECATED_ReadAuthorContent(ID string, offset, count int) (content []monke
  * 		get tags:	SELECT tag FROM TAG_TABLE WHERE id=ID
  */
 func getTags(ID string) (tags []string, err error) {
-	tags = make([]string, 0)
-
-	var statement string = "SELECT tag FROM " + TAG_TABLE + " WHERE id=?"
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID); err != nil || rows == nil {
+	if rows, err = database.Queryx(READ_TAGS_OF_ID, ID); err != nil || rows == nil {
 		return
 	}
 
 	defer rows.Close()
 
+	tags = make([]string, 0)
 	var tag string
 	for rows.Next() {
 		if err = rows.Scan(&tag); err != nil {
@@ -149,9 +143,9 @@ func getManyTags(IDs []string) (tags map[string][]string, err error) {
 		tags[id] = make([]string, 0)
 	}
 
-	var statement string = "SELECT id, tag FROM " + TAG_TABLE + " WHERE id IN (" + manyParamString("?", len(IDs)) + ")"
+	var paramString string = "(" + manyParamString("?", len(IDs)) + ")"
 	var rows *sql.Rows
-	if rows, err = database.Query(statement, interfaceStrings(IDs...)...); err != nil || rows == nil {
+	if rows, err = database.Query(READ_TAGS_OF_MANY_ID+paramString, interfaceStrings(IDs...)...); err != nil || rows == nil {
 		return
 	}
 
@@ -181,12 +175,12 @@ func setTags(ID string, tags []string) (err error) {
 		return
 	}
 
-	var statement string = "DELETE FROM " + TAG_TABLE + " WHERE id=? AND tag NOT IN (" + manyParamString("?", len(tags)) + ")"
+	var paramString string = "(" + manyParamString("?", len(tags)) + ")"
 	var faces []interface{} = append(
 		[]interface{}{ID},
 		interfaceStrings(tags...)...,
 	)
-	if _, err = database.Exec(statement, faces...); err != nil {
+	if _, err = database.Exec(DELETE_STALE_TAGS_OF_ID+paramString, faces...); err != nil {
 		return
 	}
 
@@ -201,8 +195,8 @@ func setTags(ID string, tags []string) (err error) {
 		index++
 	}
 
-	statement = "REPLACE INTO " + TAG_TABLE + " (id, tag, created) VALUES " + manyParamString("(?, ?, ?)", length)
-	_, err = database.Exec(statement, insertable...)
+	paramString = manyParamString("(?, ?, ?)", length)
+	_, err = database.Exec(WRITE_TAGS_OF_MANY_ID+paramString, insertable...)
 	return
 }
 
@@ -211,6 +205,6 @@ func setTags(ID string, tags []string) (err error) {
  * Done in one query
  */
 func dropTags(ID string) (err error) {
-	_, err = database.Exec("DELETE FROM "+TAG_TABLE+" WHERE id=?", ID)
+	_, err = database.Exec(DELETE_TAGS_OF_ID, ID)
 	return
 }
