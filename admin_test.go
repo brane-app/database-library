@@ -136,7 +136,7 @@ func Test_ReadBansOfUser(test *testing.T) {
 	var ban monketype.Ban
 	for index, ban = range fetched[1:] {
 		if ban.ID != bans[1+index+offset].ID {
-			test.Errorf("ban mismatch: \nhave: %#v, \nwant: %#v", ban, bans[1+index+offset])
+			test.Errorf("ban mismatch: \nhave: %s, \nwant: %s", ban.ID, bans[1+index+offset].ID)
 		}
 
 		now = ban.Created

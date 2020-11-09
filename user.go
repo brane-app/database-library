@@ -27,13 +27,11 @@ func WriteUser(user map[string]interface{}) (err error) {
  * 		delete user: 	DELETE FROM USER_TABLE WHERE id=ID LIMIT 1
  */
 func DeleteUser(ID string) (err error) {
-	var statement string = "DELETE FROM " + USER_TABLE + " WHERE id=? LIMIT 1"
-	_, err = database.Exec(statement, ID)
+	_, err = database.Exec(DELETE_USER_OF_ID, ID)
 	return
 }
 
-func readSingleUserKey(key, query string) (user monketype.User, exists bool, err error) {
-	var statement string = "SELECT * FROM " + USER_TABLE + " WHERE " + key + "=? LIMIT 1"
+func readSingleUserKey(statement, query string) (user monketype.User, exists bool, err error) {
 	if err = database.QueryRowx(statement, query).StructScan(&user); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
@@ -52,7 +50,7 @@ func readSingleUserKey(key, query string) (user monketype.User, exists bool, err
  * 		read user: 	SELECT * FROM USER_TABLE WHERE id=ID LIMIT 1
  */
 func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
-	user, exists, err = readSingleUserKey("id", ID)
+	user, exists, err = readSingleUserKey(READ_USER_OF_ID, ID)
 	return
 }
 
@@ -63,7 +61,7 @@ func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
  * 		read user: 	SELECT * FROM USER_TABLE WHERE email=email LIMIT 1
  */
 func ReadSingleUserEmail(email string) (user monketype.User, exists bool, err error) {
-	user, exists, err = readSingleUserKey("email", email)
+	user, exists, err = readSingleUserKey(READ_USER_OF_EMAIL, email)
 	return
 }
 
@@ -74,13 +72,7 @@ func ReadSingleUserEmail(email string) (user monketype.User, exists bool, err er
  * 		read user: 	SELECT * FROM USER_TABLE WHERE nick=nick LIMIT 1
  */
 func ReadSingleUserNick(nick string) (user monketype.User, exists bool, err error) {
-	user, exists, err = readSingleUserKey("nick", nick)
-	return
-}
-
-func modifyNamedCount(ID, key string, diff int) (err error) {
-	var statement string = "UPDATE " + USER_TABLE + " SET " + key + "=" + key + "+? WHERE id=?"
-	_, err = database.Exec(statement, diff, ID)
+	user, exists, err = readSingleUserKey(READ_USER_OF_NICK, nick)
 	return
 }
 
@@ -90,14 +82,13 @@ func modifyNamedCount(ID, key string, diff int) (err error) {
  * 		increment: UPDATE USER_TABLE SET post_count=post_count+1 WHERE id=ID
  */
 func IncrementPostCount(ID string) (err error) {
-	err = modifyNamedCount(ID, "post_count", 1)
+	_, err = database.Exec(INCREMENT_USER_POST_COUNT_OF_ID, ID)
 	return
 }
 
 func IsModerator(ID string) (moderator bool, err error) {
 	var admin bool
-	var statement string = "SELECT admin, moderator FROM " + USER_TABLE + " WHERE id=?"
-	if err = database.QueryRowx(statement, ID).Scan(&admin, &moderator); err != nil {
+	if err = database.QueryRowx(READ_ANY_PRIVILEGE_OF_ID, ID).Scan(&admin, &moderator); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
@@ -110,8 +101,7 @@ func IsModerator(ID string) (moderator bool, err error) {
 }
 
 func IsAdmin(ID string) (admin bool, err error) {
-	var statement string = "SELECT admin FROM " + USER_TABLE + " WHERE id=?"
-	if err = database.QueryRowx(statement, ID).Scan(&admin); err == sql.ErrNoRows {
+	if err = database.QueryRowx(READ_ADMIN_OF_ID, ID).Scan(&admin); err == sql.ErrNoRows {
 		err = nil
 	}
 
@@ -119,13 +109,11 @@ func IsAdmin(ID string) (admin bool, err error) {
 }
 
 func SetModerator(ID string, state bool) (err error) {
-	var statement string = "UPDATE " + USER_TABLE + " SET moderator=? WHERE id=?"
-	_, err = database.Exec(statement, state, ID)
+	_, err = database.Exec(WRITE_MODERATOR_OF_ID, state, ID)
 	return
 }
 
 func SetAdmin(ID string, state bool) (err error) {
-	var statement string = "UPDATE " + USER_TABLE + " SET admin=? WHERE id=?"
-	_, err = database.Exec(statement, state, ID)
+	_, err = database.Exec(WRITE_ADMIN_OF_ID, state, ID)
 	return
 }
