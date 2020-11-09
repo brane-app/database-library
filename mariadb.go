@@ -59,6 +59,7 @@ var (
 			subscriber CHAR(36) NOT NULL,
 			subscription CHAR(36) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
+			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
 			CONSTRAINT no_dupe_subscriptions UNIQUE(subscriber, subscription)`,
 		BAN_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
@@ -67,7 +68,8 @@ var (
 			reason CHAR(255),
 			expires BIGINT UNSIGNED NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
-			forever BOOLEAN`,
+			forever BOOLEAN,
+			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT`,
 		REPORT_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			reporter CHAR(36) NOT NULL,
@@ -76,7 +78,8 @@ var (
 			reason CHAR(255) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
 			resolved BOOLEAN NOT NULL,
-			resolution CHAR(255) NOT NULL`,
+			resolution CHAR(255) NOT NULL,
+			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT`,
 	}
 )
 
