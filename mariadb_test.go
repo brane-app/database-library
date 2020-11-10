@@ -30,9 +30,11 @@ func mapMod(source map[string]interface{}, mods ...map[string]interface{}) (modi
 
 func TestMain(main *testing.M) {
 	Connect(CONNECTION)
+	if database == nil {
+		panic("database nil after being set!")
+	}
 
 	var err error
-
 	var table string
 	for table = range tables {
 		if _, err = database.Query("DROP TABLE IF EXISTS " + table); err != nil {
@@ -41,9 +43,6 @@ func TestMain(main *testing.M) {
 	}
 
 	create()
-	if database == nil {
-		panic("database nil after being set!")
-	}
 
 	var result int = main.Run()
 
