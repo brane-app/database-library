@@ -46,16 +46,17 @@ func contentOK(test *testing.T, data map[string]interface{}, have monketype.Cont
 func populate(many int) (err error) {
 	var modified map[string]interface{}
 
-	for many != 0 {
+	var index int = 0
+	for index != many {
 		modified = mapCopy(writableContent)
-		modified["id"] = "many_" + strconv.Itoa(many)
-		modified["created"] = time.Now().Unix()
+		modified["id"] = "many_" + strconv.Itoa(index)
+		modified["created"] = time.Now().Unix() + int64(100*index)
 
 		if err = WriteContent(modified); err != nil {
 			break
 		}
 
-		many--
+		index++
 	}
 
 	return
@@ -254,6 +255,24 @@ func Test_ReadManyContent(test *testing.T) {
 
 	if len(content) != size {
 		test.Errorf("block size mismatch! have: %d, want: %d", len(content), size)
+	}
+}
+
+func Test_ReadManyContent_order(test *testing.T) {
+	EmptyTable(CONTENT_TABLE)
+	populate(30)
+
+	var content []monketype.Content
+	var err error
+	if content, _, err = ReadManyContent("", 10); err != nil {
+		test.Fatal(err)
+	}
+
+	var index int
+	for index = range content[1:] {
+		if content[index].Created > content[index+1].Created {
+			test.Errorf("created out of order! this: %d, next: %d", content[index].Created, content[index+1].Created)
+		}
 	}
 }
 
