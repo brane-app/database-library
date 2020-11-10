@@ -64,16 +64,19 @@ func ReadSingleContent(ID string) (content monketype.Content, exists bool, err e
 }
 
 /**
- * Read `count` number of contents, starting from `offset`
+ * Read `count` number of contents, after content of id `after`
+ * If the first set of content should be read, `after` may be empty
  * Newest posts are returned first
  * Uses 2 queries
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func ReadManyContent(offset, count int) (content []monketype.Content, size int, err error) {
+func ReadManyContent(after string, count int) (content []monketype.Content, size int, err error) {
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(READ_MANY_CONTENT, offset, count); err != nil || rows == nil {
-		return
+	if after == "" {
+		rows, err = database.Queryx(READ_MANY_CONTENT, count)
+	} else {
+		rows, err = database.Queryx(READ_MANY_CONTENT_AFTER_ID, after, count)
 	}
 
 	defer rows.Close()

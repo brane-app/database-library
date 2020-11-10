@@ -49,7 +49,7 @@ func populate(many int) (err error) {
 	for many != 0 {
 		modified = mapCopy(writableContent)
 		modified["id"] = "many_" + strconv.Itoa(many)
-		modified["created"] = time.Now().Unix() + int64(100000*many)
+		modified["created"] = time.Now().Unix()
 
 		if err = WriteContent(modified); err != nil {
 			break
@@ -237,67 +237,89 @@ func Test_ReadSingleContent_NotExists(test *testing.T) {
 }
 
 func Test_ReadManyContent(test *testing.T) {
-	var err error
-	var many int = 31
-	if err = populate(many); err != nil {
-		test.Fatal(err)
-	}
+	EmptyTable(CONTENT_TABLE)
+	populate(30)
 
-	var offset, count int = 4, 15
-
+	var count int = 10
 	var content []monketype.Content
 	var size int
-	if content, size, err = ReadManyContent(offset, count); err != nil {
+	var err error
+	if content, size, err = ReadManyContent("", count); err != nil {
 		test.Fatal(err)
 	}
 
-	if size != count {
-		test.Errorf("did not get enough posts! have: %d, want: %d", size, count)
+	if len(content) != count {
+		test.Errorf("block is wrong size! have: %d, want: %d", len(content), count)
 	}
 
 	if len(content) != size {
-		test.Errorf("content size %d (%+v) does not match size %d!", len(content), content, size)
+		test.Errorf("block size mismatch! have: %d, want: %d", len(content), size)
+	}
+}
+
+func Test_ReadManyContent_after(test *testing.T) {
+	EmptyTable(CONTENT_TABLE)
+	populate(30)
+
+	var count, offset int = 10, 5
+	var first, second []monketype.Content
+	var err error
+	if first, _, err = ReadManyContent("", count); err != nil {
+		test.Fatal(err)
 	}
 
-	var index, suffix int
-	var single monketype.Content
-	for index, single = range content {
-		suffix = size - index + 12
-		if single.ID != "many_"+strconv.Itoa(suffix) {
-			test.Errorf("ID %s does not have suffix %d!", single.ID, suffix)
+	if second, _, err = ReadManyContent(first[offset].ID, count); err != nil {
+		test.Fatal(err)
+	}
+
+	var index int
+	var content monketype.Content
+	for index, content = range first[offset+1:] {
+		if second[index].ID != content.ID {
+			test.Errorf("IDs not aligned! have: %s, want: %s", second[index].ID, content.ID)
 		}
 	}
 }
 
-func Test_ReadManyContent_notags(test *testing.T) {
+func Test_ReadManyContent_afterNothing(test *testing.T) {
 	EmptyTable(CONTENT_TABLE)
-
-	var err error
-	var many int = 2
-	if err = populate(many); err != nil {
-		test.Fatal(err)
-	}
-
-	var modified map[string]interface{} = mapCopy(writableContent)
-	modified["id"] = uuid.New().String()
-	modified["tags"] = []string{}
-
-	WriteContent(modified)
-
-	var offset, count int = 0, 3
+	populate(30)
 
 	var content []monketype.Content
-	var size int
-	if content, size, err = ReadManyContent(offset, count); err != nil {
+	var err error
+	if content, _, err = ReadManyContent("foobar", 10); err != nil {
 		test.Fatal(err)
 	}
 
-	if size != count {
-		test.Errorf("did not get enough posts! have: %d, want: %d", size, count)
+	if len(content) != 0 {
+		test.Errorf("read after nonexisting id got %v", content)
+	}
+}
+
+func Test_ReadManyContent_emptyTags(test *testing.T) {
+	EmptyTable(CONTENT_TABLE)
+	populate(1)
+
+	var modified map[string]interface{} = mapCopy(writableContent)
+	modified["id"] = "empty_tags"
+	modified["tags"] = make([]string, 1)
+	WriteContent(modified)
+
+	modified = mapCopy(writableContent)
+	modified["id"] = "empty_literal_tags"
+	modified["tags"] = []string{}
+	WriteContent(modified)
+
+	var sizeExpect int = 3
+	var content []monketype.Content
+	var size int
+	var err error
+	if content, size, err = ReadManyContent("", sizeExpect); err != nil {
+		test.Fatal(err)
 	}
 
-	if len(content) != size {
-		test.Errorf("content size %d (%+v) does not match size %d!", len(content), content, size)
+	if sizeExpect != size {
+		test.Errorf("size mismatch! have: %d, want: %d", size, sizeExpect)
 	}
 
 	var single monketype.Content
@@ -308,33 +330,39 @@ func Test_ReadManyContent_notags(test *testing.T) {
 	}
 }
 
-func Test_ReadManyContent_Fewer(test *testing.T) {
-	var err error
-	if _, err = database.Query("DROP TABLE IF EXISTS " + CONTENT_TABLE); err != nil {
-		test.Fatal(err)
-	}
+func Test_ReadManyContent_withTags(test *testing.T) {
+	EmptyTable(CONTENT_TABLE)
 
-	create()
-
-	var many int = 12
-	if err = populate(many); err != nil {
-		test.Fatal(err)
-	}
-
-	var offset, count int = 4, 15
+	var modified map[string]interface{} = mapCopy(writableContent)
+	modified["id"] = "with_tags"
+	modified["tags"] = []string{"foo"}
+	WriteContent(modified)
 
 	var content []monketype.Content
-	var size int
-	if content, size, err = ReadManyContent(offset, count); err != nil {
+	var err error
+	if content, _, err = ReadManyContent("", 1); err != nil {
 		test.Fatal(err)
 	}
 
-	if size != many-offset {
-		test.Errorf("Got too many or few posts! have: %d, want: %d", size, many-offset)
+	if content[0].Tags[0] != "foo" {
+		test.Errorf("tags mismatch! have: %v, want: %v", content[0].Tags, []string{"foo"})
+	}
+}
+
+func Test_ReadManyContent_fewer(test *testing.T) {
+	EmptyTable(CONTENT_TABLE)
+
+	var population int = 5
+	populate(population)
+
+	var size int
+	var err error
+	if _, size, err = ReadManyContent("", 20); err != nil {
+		test.Fatal(err)
 	}
 
-	if len(content) != size {
-		test.Errorf("content size %d (%+v) does not match size %d!", len(content), content, size)
+	if size != population {
+		test.Errorf("size mismatch! have: %d, want: %d", size, population)
 	}
 }
 
