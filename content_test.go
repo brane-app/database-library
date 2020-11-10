@@ -43,18 +43,45 @@ func contentOK(test *testing.T, data map[string]interface{}, have monketype.Cont
 	}
 }
 
-func populate(many int) (err error) {
+func populate(limit int) {
 	var modified map[string]interface{}
 
 	var index int = 0
-	for index != many {
+	var now int64 = time.Now().Unix()
+	for index != limit {
 		modified = mapCopy(writableContent)
-		modified["id"] = "many_" + strconv.Itoa(index)
-		modified["created"] = time.Now().Unix() + int64(100*index)
+		modified["id"] = uuid.New().String()
+		modified["created"] = now + int64(100*index)
+		WriteContent(modified)
 
-		if err = WriteContent(modified); err != nil {
-			break
-		}
+		index++
+	}
+
+	return
+}
+
+func populateAuthor(author string, limit int) {
+	var now int64 = time.Now().Unix()
+	var modified map[string]interface{}
+	var index int = 0
+	for index != limit {
+		modified = mapCopy(writableContent)
+		modified["created"] = now
+		modified["id"] = uuid.New().String()
+		modified["author"] = uuid.New().String()
+		WriteContent(modified)
+
+		modified = mapCopy(writableContent)
+		modified["created"] = now
+		modified["id"] = uuid.New().String()
+		modified["author"] = author
+		WriteContent(modified)
+
+		modified = mapCopy(writableContent)
+		modified["created"] = now
+		modified["id"] = uuid.New().String()
+		modified["author"] = uuid.New().String()
+		WriteContent(modified)
 
 		index++
 	}
@@ -292,10 +319,10 @@ func Test_ReadManyContent_after(test *testing.T) {
 	}
 
 	var index int
-	var content monketype.Content
-	for index, content = range first[offset+1:] {
-		if second[index].ID != content.ID {
-			test.Errorf("IDs not aligned! have: %s, want: %s", second[index].ID, content.ID)
+	var single monketype.Content
+	for index, single = range first[offset+1:] {
+		if second[index].ID != single.ID {
+			test.Errorf("IDs not aligned! have: %s, want: %s", second[index].ID, single.ID)
 		}
 	}
 }
@@ -386,45 +413,87 @@ func Test_ReadManyContent_fewer(test *testing.T) {
 }
 
 func Test_ReadAuthorContent(test *testing.T) {
-	var err error
-	if err = populate(20); err != nil {
-		test.Fatal(err)
-	}
+	EmptyTable(CONTENT_TABLE)
 
 	var author string = uuid.New().String()
-	var modified map[string]interface{}
+	populateAuthor(author, 20)
 
-	var index, many int = 0, 20
-	for index != many {
-		modified = mapCopy(writableContent)
-		modified["author"] = author
-		modified["created"] = time.Now().Unix()
-		modified["id"] = uuid.New().String()
-
-		if err = WriteContent(modified); err != nil {
-			test.Fatal(err)
-		}
-
-		index++
-	}
-
-	var offset int = 4
-
+	var count int = 5
 	var content []monketype.Content
 	var size int
-	if content, size, err = ReadAuthorContent(author, offset, many); err != nil {
+	var err error
+	if content, size, err = ReadAuthorContent(author, "", count); err != nil {
 		test.Fatal(err)
 	}
 
-	if size != many-offset {
-		test.Errorf("Got too many or few posts! have: %d, want: %d", size, many-offset)
+	if len(content) != count {
+		test.Errorf("block is wrong size! have: %d, want: %d", len(content), count)
+	}
+
+	if len(content) != size {
+		test.Errorf("block size mismatch! have: %d, want: %d", len(content), size)
 	}
 
 	var single monketype.Content
 	for _, single = range content {
 		if single.Author != author {
-			test.Errorf("monketype.Content %s author mismatch! have: %s, want: %s", single.ID, single.Author, author)
+			test.Errorf("author mismatch! have: %s, want: %s", single.Author, author)
 		}
 	}
+}
 
+func Test_ReadAuthorContent_after(test *testing.T) {
+	EmptyTable(CONTENT_TABLE)
+
+	var author string = uuid.New().String()
+	populateAuthor(author, 20)
+
+	var count, offset int = 10, 5
+	var first, second []monketype.Content
+	var err error
+	if first, _, err = ReadAuthorContent(author, "", count); err != nil {
+		test.Fatal(err)
+	}
+
+	if second, _, err = ReadAuthorContent(author, first[offset].ID, count); err != nil {
+		test.Fatal(err)
+	}
+
+	var index int
+	var single monketype.Content
+	for index, single = range first[offset+1:] {
+		if single.ID != second[index].ID {
+			test.Errorf("IDs not aligned! have: %s, want: %s", second[index].ID, single.ID)
+		}
+	}
+}
+
+func Test_ReadAuthorContent_fewer(test *testing.T) {
+	EmptyTable(CONTENT_TABLE)
+
+	var author string = uuid.New().String()
+	var population int = 5
+	populateAuthor(author, population)
+
+	var content []monketype.Content
+	var size int
+	var err error
+	if content, size, err = ReadAuthorContent(author, "", 30); err != nil {
+		test.Fatal(err)
+	}
+
+	if len(content) != population {
+		test.Errorf("too high population! have: %d, want: %d", len(content), population)
+	}
+
+	if size != population {
+		test.Errorf("too large size! have: %d, want: %d", size, population)
+	}
+
+	var single monketype.Content
+	for _, single = range content {
+		if single.Author != author {
+			test.Errorf("author mismatch! have: %s, want: %s", single.Author, author)
+		}
+	}
 }

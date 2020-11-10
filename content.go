@@ -80,7 +80,10 @@ func ReadManyContent(after string, count int) (content []monketype.Content, size
 	}
 
 	defer rows.Close()
-	content, size, err = scanManyContent(rows, count)
+	if err == nil {
+		content, size, err = scanManyContent(rows, count)
+	}
+
 	return
 }
 
@@ -90,14 +93,20 @@ func ReadManyContent(after string, count int) (content []monketype.Content, size
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func ReadAuthorContent(ID string, offset, count int) (content []monketype.Content, size int, err error) {
+func ReadAuthorContent(ID, after string, count int) (content []monketype.Content, size int, err error) {
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR, ID, offset, count); err != nil || rows == nil {
-		return
+	if after == "" {
+		rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR, ID, count)
+	} else {
+		rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR_AFTER_ID, ID, after, count)
 	}
 
 	defer rows.Close()
-	content, size, err = scanManyContent(rows, count)
+
+	if err == nil {
+		content, size, err = scanManyContent(rows, count)
+	}
+
 	return
 }
 
