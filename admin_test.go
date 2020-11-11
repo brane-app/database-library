@@ -150,7 +150,23 @@ func Test_ReadBansOfUser_after(test *testing.T) {
 		index++
 	}
 
-	// TODO
+	count = 10
+	var offset int = 5
+	var first, second []monketype.Ban
+	var err error
+	if first, _, err = ReadBansOfUser(banned, "", count); err != nil {
+		test.Fatal(err)
+	}
+
+	if second, _, err = ReadBansOfUser(banned, first[offset].ID, count); err != nil {
+		test.Fatal(err)
+	}
+
+	var single monketype.Ban
+	for index, single = range first[offset+1:] {
+		if single.ID != second[index].ID {
+		}
+	}
 }
 
 func Test_WriteReport(test *testing.T) {
@@ -234,5 +250,21 @@ func Test_ReadManyUnresolvedReport(test *testing.T) {
 		index++
 	}
 
-	// TODO:
+	var count, offset int = 10, 5
+	var first, second []monketype.Report
+	var err error
+	if first, _, err = ReadManyUnresolvedReport("", count); err != nil {
+		test.Fatal(err)
+	}
+
+	if second, _, err = ReadManyUnresolvedReport(first[offset].ID, count); err != nil {
+		test.Fatal(err)
+	}
+
+	var single monketype.Report
+	for index, single = range first[offset+1:] {
+		if single.ID != second[index].ID {
+			test.Errorf("IDs not aligned! have: %s, want: %s", second[index].ID, single.ID)
+		}
+	}
 }
