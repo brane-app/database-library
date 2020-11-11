@@ -45,10 +45,7 @@ func CreateSecret(ID string) (secret string, err error) {
 	}
 
 	secret = base64.URLEncoding.EncodeToString(bytes)
-
-	var statement string = "REPLACE INTO " + SECRET_TABLE + " (id, secret) VALUES (?, ?)"
-	_, err = database.Exec(statement, ID, bytes)
-
+	_, err = database.Exec(WRITE_SECRET_OF_ID, ID, bytes)
 	return
 }
 
@@ -58,9 +55,8 @@ func CreateSecret(ID string) (secret string, err error) {
  * 		read secret: 	SELECT secret FROM SECRET_TABLE WHERE id=ID LIMIT 1
  */
 func CheckSecret(ID, secret string) (valid bool, err error) {
-	var statement string = "SELECT secret FROM " + SECRET_TABLE + " WHERE id=? LIMIT 1"
 	var bytes []byte
-	if err = database.QueryRowx(statement, ID).Scan(&bytes); err != nil {
+	if err = database.QueryRowx(READ_SECRET_OF_ID, ID).Scan(&bytes); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
@@ -78,8 +74,7 @@ func CheckSecret(ID, secret string) (valid bool, err error) {
  * 		delete row: 	DELETE FROM SECRET_TABLE WHERE id=ID LIMIT 1
  */
 func RevokeSecretOf(ID string) (err error) {
-	var statement string = "DELETE FROM " + SECRET_TABLE + " WHERE id=? LIMIT 1"
-	_, err = database.Exec(statement, ID)
+	_, err = database.Exec(DELETE_SECRET_OF_ID, ID)
 	return
 }
 
@@ -98,9 +93,7 @@ func CreateToken(ID string) (token string, expires int64, err error) {
 	var now int64 = time.Now().Unix()
 	expires = now + TOKEN_TTL
 	token = base64.URLEncoding.EncodeToString(bytes)
-
-	var statement string = "REPLACE INTO " + TOKEN_TABLE + " (id, token, created) VALUES (?, ?, ?)"
-	_, err = database.Exec(statement, ID, bytes, now)
+	_, err = database.Exec(WRITE_TOKEN_OF_ID, ID, bytes, now)
 	return
 }
 
@@ -117,9 +110,8 @@ func ReadTokenStat(token string) (owner string, valid bool, err error) {
 		return
 	}
 
-	var statement string = "SELECT id, created FROM " + TOKEN_TABLE + " WHERE token=? LIMIT 1"
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, bytes); err != nil || rows == nil {
+	if rows, err = database.Queryx(READ_TOKEN_STAT, bytes); err != nil || rows == nil {
 		return
 	}
 
@@ -148,8 +140,7 @@ func RevokeToken(token string) (err error) {
 		return
 	}
 
-	var statement string = "DELETE FROM " + TOKEN_TABLE + " WHERE token=?"
-	_, err = database.Exec(statement, bytes)
+	_, err = database.Exec(DELETE_TOKEN, bytes)
 	return
 }
 
@@ -159,8 +150,7 @@ func RevokeToken(token string) (err error) {
  * 		delete row: 	DELETE FROM TOKEN_TABLE WHERE id=ID LIMIT 1
  */
 func RevokeTokenOf(ID string) (err error) {
-	var statement string = "DELETE FROM " + TOKEN_TABLE + " WHERE id=?"
-	_, err = database.Exec(statement, ID)
+	_, err = database.Exec(DELETE_TOKEN_OF_ID, ID)
 	return
 }
 
@@ -170,9 +160,8 @@ func RevokeTokenOf(ID string) (err error) {
  *  		read hash: 		SELECT hash FROM AUTH_TABLE WHERE id=ID LIMIT 1
  */
 func CheckPassword(ID, password string) (valid bool, err error) {
-	var statement string = "SELECT hash FROM " + AUTH_TABLE + " WHERE id=? LIMIT 1"
 	var hash []byte
-	if err = database.QueryRowx(statement, ID).Scan(&hash); err != nil {
+	if err = database.QueryRowx(READ_HASH_OF_ID, ID).Scan(&hash); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
@@ -195,8 +184,7 @@ func SetPassword(ID, password string) (err error) {
 		return
 	}
 
-	var statement string = "REPLACE INTO " + AUTH_TABLE + " (id, hash) VALUES (?, ?)"
-	_, err = database.Exec(statement, ID, hash)
+	_, err = database.Exec(WRITE_HASH_OF_ID, ID, hash)
 
 	return
 }
