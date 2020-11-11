@@ -55,7 +55,7 @@ func TestMain(main *testing.M) {
 	os.Exit(result)
 }
 
-func Test_Connect(test *testing.T) {
+func Test_Connect_malformedAddress(test *testing.T) {
 	defer func(test *testing.T) {
 		var recovered interface{}
 
@@ -68,6 +68,21 @@ func Test_Connect(test *testing.T) {
 	defer func(existing *sqlx.DB) { database = existing }(existing)
 
 	Connect("foobar")
+}
+
+func Test_Connect_unreachableAddress(test *testing.T) {
+	defer func(test *testing.T) {
+		var recovered interface{}
+
+		if recovered = recover(); recovered == nil {
+			test.Errorf("recover recovered nil!")
+		}
+	}(test)
+
+	var existing *sqlx.DB = database
+	defer func(existing *sqlx.DB) { database = existing }(existing)
+
+	Connect("foo:bar@tcp(nothing)/table")
 }
 
 func Test_EmptyTable(test *testing.T) {
