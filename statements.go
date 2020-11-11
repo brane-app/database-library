@@ -74,8 +74,7 @@ resolution`
 	READ_BAN_OF_ID             = "SELECT " + BAN_FIELDS + " FROM " + BAN_TABLE + " WHERE id=? LIMIT 1"
 	READ_BANS_OF_USER          = "SELECT " + BAN_FIELDS + " FROM " + BAN_TABLE + " WHERE banned=? ORDER BY order_index ASC LIMIT ?"
 	READ_BANS_OF_USER_AFTER_ID = "SELECT " + BAN_FIELDS + " FROM " + BAN_TABLE + " WHERE banned=? AND order_index>(" + READ_INDEX_OF_BAN + ") ORDER BY order_index ASC LIMIT ?"
-	// TODO: LIMIT 1 ?
-	READ_BANS_OF_USER_COUNT = "SELECT COUNT(id) FROM " + BAN_TABLE + " WHERE (banned=? AND forever) OR (banned=? AND expires>?)"
+	READ_BANS_OF_USER_COUNT    = "SELECT COUNT(id) FROM " + BAN_TABLE + " WHERE (banned=? AND forever) OR (banned=? AND expires>?) LIMIT 1"
 
 	READ_REPORT_OF_ID                = "SELECT " + REPORT_FIELDS + " FROM " + REPORT_TABLE + " WHERE id=?"
 	READ_INDEX_OF_REPORT             = "SELECT order_index FROM " + REPORT_TABLE + " WHERE id=? LIMIT 1"
