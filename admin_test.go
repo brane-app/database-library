@@ -107,44 +107,65 @@ func Test_IsBanned_OldAndForever(test *testing.T) {
 func Test_ReadBansOfUser(test *testing.T) {
 	EmptyTable(BAN_TABLE)
 	var banned string = uuid.New().String()
-
-	var size_bans, index int = 20, 0
-	var bans []monketype.Ban = make([]monketype.Ban, size_bans)
-	for ; index != size_bans; index++ {
-		bans[index] = monketype.NewBan(uuid.New().String(), banned, "", 0, true)
-		bans[index].Created = bans[index].Created + int64(100+size_bans-index)
-		WriteBan(bans[index].Map())
+	var count, index int = 20, 0
+	for count != index {
 		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		WriteBan(monketype.NewBan(uuid.New().String(), banned, "", 0, true).Map())
+		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		index++
 	}
 
-	var fetched []monketype.Ban
-	var offset, count, size int = 7, 9, 0
+	count = 10
+	var bans []monketype.Ban
+	var size int
 	var err error
-	if fetched, size, err = ReadBansOfUser(banned, offset, count); err != nil {
+	if bans, size, err = ReadBansOfUser(banned, "", count); err != nil {
 		test.Fatal(err)
 	}
 
-	if size != count {
-		test.Errorf("read %d bans, expected %d\n%#v", size, count, fetched)
+	if count != size {
+		test.Errorf("size expected mismatch! have: %d, want: %d", size, count)
 	}
 
-	if len(fetched) != size {
-		test.Errorf("actual size %d does not match size %d", len(fetched), size)
+	if len(bans) != size {
+		test.Errorf("size actual mismatch! have: %d, want: %d", size, len(bans))
 	}
 
-	var now, last int64 = 0, fetched[0].Created
 	var ban monketype.Ban
-	for index, ban = range fetched[1:] {
-		if ban.ID != bans[1+index+offset].ID {
-			test.Errorf("ban mismatch: \nhave: %#v, \nwant: %#v", ban, bans[1+index+offset])
+	for _, ban = range bans {
+		if ban.Banned != banned {
+			test.Errorf("Ban banned mismatch! have: %s, want: %s", ban.Banned, banned)
 		}
+	}
+}
 
-		now = ban.Created
-		if now > last {
-			test.Errorf("Fail at %d: %d < %d", index, now, last)
+func Test_ReadBansOfUser_after(test *testing.T) {
+	EmptyTable(BAN_TABLE)
+	var banned string = uuid.New().String()
+	var count, index int = 20, 0
+	for count != index {
+		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		WriteBan(monketype.NewBan(uuid.New().String(), banned, "", 0, true).Map())
+		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		index++
+	}
+
+	count = 10
+	var offset int = 5
+	var first, second []monketype.Ban
+	var err error
+	if first, _, err = ReadBansOfUser(banned, "", count); err != nil {
+		test.Fatal(err)
+	}
+
+	if second, _, err = ReadBansOfUser(banned, first[offset].ID, count); err != nil {
+		test.Fatal(err)
+	}
+
+	var single monketype.Ban
+	for index, single = range first[offset+1:] {
+		if single.ID != second[index].ID {
 		}
-
-		last = now
 	}
 }
 
@@ -213,49 +234,37 @@ func Test_ReadReport_notExists(test *testing.T) {
 
 func Test_ReadManyUnresolvedReport(test *testing.T) {
 	EmptyTable(REPORT_TABLE)
+
 	var report monketype.Report
-	var index int
-	var size_resolved, size_unresolved int = 10, 20
-	for index = 0; index != size_resolved; index++ {
+	var index, limit int = 0, 20
+	for index != limit {
 		report = monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
 		report.Resolved = true
 		WriteReport(report.Map())
+
+		WriteReport(monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "").Map())
+
+		report = monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
+		report.Resolved = true
+		WriteReport(report.Map())
+		index++
 	}
 
-	var unresolved []monketype.Report = make([]monketype.Report, size_unresolved)
-	for index = 0; index != size_unresolved; index++ {
-		unresolved[index] = monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
-		unresolved[index].Resolved = false
-		unresolved[index].Created = unresolved[index].Created + int64(100+size_unresolved-index)
-		WriteReport(unresolved[index].Map())
-	}
-
-	var fetched []monketype.Report
-	var offset, count, size int = 3, 7, 0
+	var count, offset int = 10, 5
+	var first, second []monketype.Report
 	var err error
-	if fetched, size, err = ReadManyUnresolvedReport(offset, count); err != nil {
+	if first, _, err = ReadManyUnresolvedReport("", count); err != nil {
 		test.Fatal(err)
 	}
 
-	if size != count {
-		test.Errorf("read %d reports, expected %d\n%#v", size, count, fetched)
+	if second, _, err = ReadManyUnresolvedReport(first[offset].ID, count); err != nil {
+		test.Fatal(err)
 	}
 
-	if len(fetched) != size {
-		test.Errorf("actual size %d does not match size %d", len(fetched), size)
-	}
-
-	var now, last int64 = 0, fetched[0].Created
-	for index, report = range fetched[1:] {
-		if report.ID != unresolved[1+index+offset].ID {
-			test.Errorf("report mismatch: \nhave: %#v, \nwant: %#v", report, unresolved[1+index+offset])
+	var single monketype.Report
+	for index, single = range first[offset+1:] {
+		if single.ID != second[index].ID {
+			test.Errorf("IDs not aligned! have: %s, want: %s", second[index].ID, single.ID)
 		}
-
-		now = report.Created
-		if now > last {
-			test.Errorf("Fail at %d: %d < %d", index, now, last)
-		}
-
-		last = now
 	}
 }

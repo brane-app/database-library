@@ -17,9 +17,12 @@ func WriteBan(ban map[string]interface{}) (err error) {
 	return
 }
 
-func readSingleBanKey(key, query string) (ban monketype.Ban, exists bool, err error) {
-	var statement string = "SELECT * FROM " + BAN_TABLE + " WHERE " + key + "=? LIMIT 1"
-	if err = database.QueryRowx(statement, query).StructScan(&ban); err != nil {
+/**
+ * Read a single ban of id `ID`
+ * Done in one query
+ */
+func ReadSingleBan(ID string) (ban monketype.Ban, exists bool, err error) {
+	if err = database.QueryRowx(READ_BAN_OF_ID, ID).StructScan(&ban); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
@@ -32,22 +35,18 @@ func readSingleBanKey(key, query string) (ban monketype.Ban, exists bool, err er
 }
 
 /**
- * Read a single ban of id `ID`
- * Done in one query
- */
-func ReadSingleBan(ID string) (ban monketype.Ban, exists bool, err error) {
-	ban, exists, err = readSingleBanKey("id", ID)
-	return
-}
-
-/**
  * Read a slice of bans of a user
  * Done in one query
  */
-func ReadBansOfUser(ID string, offset, count int) (bans []monketype.Ban, size int, err error) {
-	var statement string = "SELECT * FROM " + BAN_TABLE + " WHERE banned=? ORDER BY created DESC LIMIT ?, ?"
+func ReadBansOfUser(ID, after string, count int) (bans []monketype.Ban, size int, err error) {
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, ID, offset, count); err != nil || rows == nil {
+	if after == "" {
+		rows, err = database.Queryx(READ_BANS_OF_USER, ID, count)
+	} else {
+		rows, err = database.Queryx(READ_BANS_OF_USER_AFTER_ID, ID, after, count)
+	}
+
+	if err != nil {
 		return
 	}
 
@@ -69,10 +68,8 @@ func ReadBansOfUser(ID string, offset, count int) (bans []monketype.Ban, size in
  */
 func IsBanned(ID string) (banned bool, err error) {
 	var count int
-
 	var now int64 = time.Now().Unix()
-	var statement string = "SELECT COUNT(*) FROM " + BAN_TABLE + " WHERE (banned=? AND forever) OR (banned=? AND expires>?)"
-	if err = database.QueryRowx(statement, ID, ID, now).Scan(&count); err != nil {
+	if err = database.QueryRowx(READ_BANS_OF_USER_COUNT, ID, ID, now).Scan(&count); err != nil {
 		return
 	}
 
@@ -97,17 +94,22 @@ func WriteReport(report map[string]interface{}) (err error) {
  * Read a slice of unresolved reports (ie, the mod queue) by order of most recent
  * Done in one query
  */
-func ReadManyUnresolvedReport(offset, count int) (reports []monketype.Report, size int, err error) {
-	var statement string = "SELECT * FROM " + REPORT_TABLE + " WHERE resolved=0 ORDER BY created DESC LIMIT ?, ?"
+func ReadManyUnresolvedReport(after string, count int) (reports []monketype.Report, size int, err error) {
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(statement, offset, count); err != nil || rows == nil {
+	if after == "" {
+		rows, err = database.Queryx(READ_REPORTS_UNRESOLVED, count)
+	} else {
+		rows, err = database.Queryx(READ_REPORTS_UNRESOLVED_AFTER_ID, after, count)
+	}
+
+	if err != nil {
 		return
 	}
 
 	defer rows.Close()
+
 	reports = make([]monketype.Report, count)
 	size = 0
-
 	for rows.Next() {
 		rows.StructScan(&reports[size])
 		size++
@@ -122,8 +124,7 @@ func ReadManyUnresolvedReport(offset, count int) (reports []monketype.Report, si
  * Done in one query
  */
 func ReadSingleReport(ID string) (report monketype.Report, exists bool, err error) {
-	var statement string = "SELECT * FROM " + REPORT_TABLE + " WHERE id=?"
-	if err = database.QueryRowx(statement, ID).StructScan(&report); err != nil {
+	if err = database.QueryRowx(READ_REPORT_OF_ID, ID).StructScan(&report); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}

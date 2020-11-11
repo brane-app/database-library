@@ -3,6 +3,8 @@ github.com/go-sql-driver/mysql v1.5.0 h1:ozyZYNQW3x3HtqT1jira07DN2PArx2v7/mN66gG
 github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/google/uuid v1.1.1 h1:Gkbcsh/GbpXz7lPftLA3P6TYMwjCLYm83jiFQZF/3gY=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/google/uuid v1.1.2 h1:EVhdT+1Kseyi1/pUmXKaFxYsDNy9RQYkMWRH68J/W7Y=
+github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/imonke/monketype v0.0.0-20200709034738-68ad017a3194 h1:LyuLt9k+FcXKeNEBJnTLTI/mcWcqyrMnH+bPXajLk/I=
 github.com/imonke/monketype v0.0.0-20200709034738-68ad017a3194/go.mod h1:+P64NN1CPbgU+kebfKsap37nZ8dR90c5SWO62/ZykUc=
 github.com/imonke/monketype v0.0.0-20200716232208-48a932335cac h1:DQCo6LLUHIBadNbGni27vfuNduYTFl9qDUbkqCQHcWo=
@@ -15,6 +17,8 @@ github.com/imonke/monketype v0.0.0-20200729024903-eb81a249cd14 h1:vAgYAlvJ7dE8Lo
 github.com/imonke/monketype v0.0.0-20200729024903-eb81a249cd14/go.mod h1:+P64NN1CPbgU+kebfKsap37nZ8dR90c5SWO62/ZykUc=
 github.com/imonke/monketype v0.0.0-20200729032806-76932a99fc50 h1:8A9h4ozgVAZwQNU8btdWw3K1IOIk74rVj/5DPbc1KXM=
 github.com/imonke/monketype v0.0.0-20200729032806-76932a99fc50/go.mod h1:+P64NN1CPbgU+kebfKsap37nZ8dR90c5SWO62/ZykUc=
+github.com/imonke/monketype v0.0.0-20201108235822-b761f9de344a h1:TSrGEgGtMUyGau9d+8XOr+y19RRfghvKnMojndAdQ+E=
+github.com/imonke/monketype v0.0.0-20201108235822-b761f9de344a/go.mod h1:+P64NN1CPbgU+kebfKsap37nZ8dR90c5SWO62/ZykUc=
 github.com/jmoiron/sqlx v1.2.0 h1:41Ip0zITnmWNR/vHV+S4m+VoUivnWY5E4OJfLZjCJMA=
 github.com/jmoiron/sqlx v1.2.0/go.mod h1:1FEQNm3xlJgrMD+FBdI9+xvCksHtbpVBBw5dYhBSsks=
 github.com/lib/pq v1.0.0 h1:X5PMW56eZitiTeO7tKzZxFCSpbFZJtkMMooicw2us9A=

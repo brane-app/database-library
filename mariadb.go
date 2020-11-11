@@ -25,7 +25,8 @@ var (
 			featured BOOLEAN,
 			featurable BOOLEAN,
 			removed BOOLEAN,
-			nsfw BOOLEAN`,
+			nsfw BOOLEAN,
+			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT`,
 		USER_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			email VARCHAR(63) UNIQUE NOT NULL,
@@ -36,7 +37,8 @@ var (
 			post_count BIGINT UNSIGNED NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
 			moderator BOOLEAN NOT NULL,
-			admin BOOLEAN NOT NULL`,
+			admin BOOLEAN NOT NULL,
+			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT`,
 		AUTH_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			hash BINARY(60) NOT NULL`,
@@ -51,11 +53,13 @@ var (
 			id CHAR(36) NOT NULL,
 			tag VARCHAR(63) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
+			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
 			CONSTRAINT no_dupe_tags UNIQUE(id, tag)`,
 		SUBSCRIPTION_TABLE: `
 			subscriber CHAR(36) NOT NULL,
 			subscription CHAR(36) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
+			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
 			CONSTRAINT no_dupe_subscriptions UNIQUE(subscriber, subscription)`,
 		BAN_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
@@ -64,7 +68,8 @@ var (
 			reason CHAR(255),
 			expires BIGINT UNSIGNED NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
-			forever BOOLEAN`,
+			forever BOOLEAN,
+			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT`,
 		REPORT_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			reporter CHAR(36) NOT NULL,
@@ -73,7 +78,8 @@ var (
 			reason CHAR(255) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
 			resolved BOOLEAN NOT NULL,
-			resolution CHAR(255) NOT NULL`,
+			resolution CHAR(255) NOT NULL,
+			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT`,
 	}
 )
 

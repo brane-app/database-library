@@ -30,9 +30,11 @@ func mapMod(source map[string]interface{}, mods ...map[string]interface{}) (modi
 
 func TestMain(main *testing.M) {
 	Connect(CONNECTION)
+	if database == nil {
+		panic("database nil after being set!")
+	}
 
 	var err error
-
 	var table string
 	for table = range tables {
 		if _, err = database.Query("DROP TABLE IF EXISTS " + table); err != nil {
@@ -41,9 +43,6 @@ func TestMain(main *testing.M) {
 	}
 
 	create()
-	if database == nil {
-		panic("database nil after being set!")
-	}
 
 	var result int = main.Run()
 
@@ -56,11 +55,9 @@ func TestMain(main *testing.M) {
 	os.Exit(result)
 }
 
-func Test_Connect(test *testing.T) {
+func Test_Connect_malformedAddress(test *testing.T) {
 	defer func(test *testing.T) {
-		var recovered interface{}
-
-		if recovered = recover(); recovered == nil {
+		if recover() == nil {
 			test.Errorf("recover recovered nil!")
 		}
 	}(test)
@@ -69,6 +66,34 @@ func Test_Connect(test *testing.T) {
 	defer func(existing *sqlx.DB) { database = existing }(existing)
 
 	Connect("foobar")
+}
+
+func Test_Connect_unreachableAddress(test *testing.T) {
+	defer func(test *testing.T) {
+		if recover() == nil {
+			test.Errorf("recover recovered nil!")
+		}
+	}(test)
+
+	var existing *sqlx.DB = database
+	defer func(existing *sqlx.DB) { database = existing }(existing)
+
+	Connect("foo:bar@tcp(nothing)/table")
+}
+
+func Test_create_badTable(test *testing.T) {
+	var backup map[string]string = tables
+
+	defer func(test *testing.T, backup map[string]string) {
+		tables = backup
+
+		if recover() == nil {
+			test.Errorf("recover recovered nil!")
+		}
+	}(test, backup)
+
+	tables = map[string]string{"foobar": "id CHAR CHAR CHAR CHAR CHAR GAS GAS GAS DEJA VU"}
+	create()
 }
 
 func Test_EmptyTable(test *testing.T) {

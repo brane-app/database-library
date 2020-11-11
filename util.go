@@ -76,9 +76,6 @@ func scanManyContent(rows *sqlx.Rows, count int) (content []monketype.Content, s
 		size++
 	}
 
-	// TODO: append can be used here
-	// to limit the capacity of the slice
-	// to save a bit of memmory
 	content = make([]monketype.Content, size)
 	copy(content, scanned)
 
