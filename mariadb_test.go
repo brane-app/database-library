@@ -57,9 +57,7 @@ func TestMain(main *testing.M) {
 
 func Test_Connect_malformedAddress(test *testing.T) {
 	defer func(test *testing.T) {
-		var recovered interface{}
-
-		if recovered = recover(); recovered == nil {
+		if recover() == nil {
 			test.Errorf("recover recovered nil!")
 		}
 	}(test)
@@ -72,9 +70,7 @@ func Test_Connect_malformedAddress(test *testing.T) {
 
 func Test_Connect_unreachableAddress(test *testing.T) {
 	defer func(test *testing.T) {
-		var recovered interface{}
-
-		if recovered = recover(); recovered == nil {
+		if recover() == nil {
 			test.Errorf("recover recovered nil!")
 		}
 	}(test)
@@ -83,6 +79,21 @@ func Test_Connect_unreachableAddress(test *testing.T) {
 	defer func(existing *sqlx.DB) { database = existing }(existing)
 
 	Connect("foo:bar@tcp(nothing)/table")
+}
+
+func Test_create_badTable(test *testing.T) {
+	var backup map[string]string = tables
+
+	defer func(test *testing.T, backup map[string]string) {
+		tables = backup
+
+		if recover() == nil {
+			test.Errorf("recover recovered nil!")
+		}
+	}(test, backup)
+
+	tables = map[string]string{"foobar": "id CHAR CHAR CHAR CHAR CHAR GAS GAS GAS DEJA VU"}
+	create()
 }
 
 func Test_EmptyTable(test *testing.T) {
