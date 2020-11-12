@@ -38,12 +38,12 @@ func ReadSingleBan(ID string) (ban monketype.Ban, exists bool, err error) {
  * Read a slice of bans of a user
  * Done in one query
  */
-func ReadBansOfUser(ID, after string, count int) (bans []monketype.Ban, size int, err error) {
+func ReadBansOfUser(ID, before string, count int) (bans []monketype.Ban, size int, err error) {
 	var rows *sqlx.Rows
-	if after == "" {
+	if before == "" {
 		rows, err = database.Queryx(READ_BANS_OF_USER, ID, count)
 	} else {
-		rows, err = database.Queryx(READ_BANS_OF_USER_AFTER_ID, ID, after, count)
+		rows, err = database.Queryx(READ_BANS_OF_USER_AFTER_ID, ID, before, count)
 	}
 
 	if err != nil {
@@ -94,12 +94,12 @@ func WriteReport(report map[string]interface{}) (err error) {
  * Read a slice of unresolved reports (ie, the mod queue) by order of most recent
  * Done in one query
  */
-func ReadManyUnresolvedReport(after string, count int) (reports []monketype.Report, size int, err error) {
+func ReadManyUnresolvedReport(before string, count int) (reports []monketype.Report, size int, err error) {
 	var rows *sqlx.Rows
-	if after == "" {
+	if before == "" {
 		rows, err = database.Queryx(READ_REPORTS_UNRESOLVED, count)
 	} else {
-		rows, err = database.Queryx(READ_REPORTS_UNRESOLVED_AFTER_ID, after, count)
+		rows, err = database.Queryx(READ_REPORTS_UNRESOLVED_AFTER_ID, before, count)
 	}
 
 	if err != nil {

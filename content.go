@@ -64,19 +64,19 @@ func ReadSingleContent(ID string) (content monketype.Content, exists bool, err e
 }
 
 /**
- * Read `count` number of contents, after content of id `after`
- * If the first set of content should be read, `after` may be empty
+ * Read `count` number of contents, before content of id `before`
+ * If the first set of content should be read, `before` may be empty
  * Newest posts are returned first
  * Uses 2 queries
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func ReadManyContent(after string, count int) (content []monketype.Content, size int, err error) {
+func ReadManyContent(before string, count int) (content []monketype.Content, size int, err error) {
 	var rows *sqlx.Rows
-	if after == "" {
+	if before == "" {
 		rows, err = database.Queryx(READ_MANY_CONTENT, count)
 	} else {
-		rows, err = database.Queryx(READ_MANY_CONTENT_AFTER_ID, after, count)
+		rows, err = database.Queryx(READ_MANY_CONTENT_AFTER_ID, before, count)
 	}
 
 	defer rows.Close()
@@ -93,12 +93,12 @@ func ReadManyContent(after string, count int) (content []monketype.Content, size
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func ReadAuthorContent(ID, after string, count int) (content []monketype.Content, size int, err error) {
+func ReadAuthorContent(ID, before string, count int) (content []monketype.Content, size int, err error) {
 	var rows *sqlx.Rows
-	if after == "" {
+	if before == "" {
 		rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR, ID, count)
 	} else {
-		rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR_AFTER_ID, ID, after, count)
+		rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR_AFTER_ID, ID, before, count)
 	}
 
 	defer rows.Close()
