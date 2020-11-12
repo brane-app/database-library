@@ -297,7 +297,7 @@ func Test_ReadManyContent_order(test *testing.T) {
 
 	var index int
 	for index = range content[1:] {
-		if content[index].Created > content[index+1].Created {
+		if content[index].Created < content[index+1].Created {
 			test.Errorf("created out of order! this: %d, next: %d", content[index].Created, content[index+1].Created)
 		}
 	}
