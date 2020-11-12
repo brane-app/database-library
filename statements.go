@@ -47,10 +47,10 @@ resolution`
 
 	READ_INDEX_OF_CONTENT                = "SELECT order_index FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
 	READ_CONTENT_ID                      = "SELECT " + CONTENT_FIELDS + " FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
-	READ_MANY_CONTENT_AFTER_ID           = "SELECT " + CONTENT_FIELDS + " FROM " + CONTENT_TABLE + " WHERE order_index>(" + READ_INDEX_OF_CONTENT + ") ORDER BY order_index DESC LIMIT ?"
+	READ_MANY_CONTENT_AFTER_ID           = "SELECT " + CONTENT_FIELDS + " FROM " + CONTENT_TABLE + " WHERE order_index<(" + READ_INDEX_OF_CONTENT + ") ORDER BY order_index DESC LIMIT ?"
 	READ_MANY_CONTENT                    = "SELECT " + CONTENT_FIELDS + " FROM " + CONTENT_TABLE + " ORDER BY order_index DESC LIMIT ?"
 	READ_MANY_CONTENT_OF_AUTHOR          = "SELECT " + CONTENT_FIELDS + " FROM " + CONTENT_TABLE + " WHERE author=? ORDER BY order_index DESC LIMIT ?"
-	READ_MANY_CONTENT_OF_AUTHOR_AFTER_ID = "SELECT " + CONTENT_FIELDS + " FROM " + CONTENT_TABLE + " WHERE author=? AND order_index>(" + READ_INDEX_OF_CONTENT + ") ORDER BY order_index DESC LIMIT ?"
+	READ_MANY_CONTENT_OF_AUTHOR_AFTER_ID = "SELECT " + CONTENT_FIELDS + " FROM " + CONTENT_TABLE + " WHERE author=? AND order_index<(" + READ_INDEX_OF_CONTENT + ") ORDER BY order_index DESC LIMIT ?"
 	DELETE_CONTENT_ID                    = "DELETE FROM " + CONTENT_TABLE + " WHERE id=? LIMIT 1"
 
 	READ_TAGS_OF_ID         = "SELECT tag FROM " + TAG_TABLE + " WHERE id=?"
@@ -73,13 +73,13 @@ resolution`
 	READ_INDEX_OF_BAN          = "SELECT order_index FROM " + BAN_TABLE + " WHERE id=? LIMIT 1"
 	READ_BAN_OF_ID             = "SELECT " + BAN_FIELDS + " FROM " + BAN_TABLE + " WHERE id=? LIMIT 1"
 	READ_BANS_OF_USER          = "SELECT " + BAN_FIELDS + " FROM " + BAN_TABLE + " WHERE banned=? ORDER BY order_index DESC LIMIT ?"
-	READ_BANS_OF_USER_AFTER_ID = "SELECT " + BAN_FIELDS + " FROM " + BAN_TABLE + " WHERE banned=? AND order_index>(" + READ_INDEX_OF_BAN + ") ORDER BY order_index DESC LIMIT ?"
+	READ_BANS_OF_USER_AFTER_ID = "SELECT " + BAN_FIELDS + " FROM " + BAN_TABLE + " WHERE banned=? AND order_index<(" + READ_INDEX_OF_BAN + ") ORDER BY order_index DESC LIMIT ?"
 	READ_BANS_OF_USER_COUNT    = "SELECT COUNT(id) FROM " + BAN_TABLE + " WHERE (banned=? AND forever) OR (banned=? AND expires>?) LIMIT 1"
 
 	READ_REPORT_OF_ID                = "SELECT " + REPORT_FIELDS + " FROM " + REPORT_TABLE + " WHERE id=?"
 	READ_INDEX_OF_REPORT             = "SELECT order_index FROM " + REPORT_TABLE + " WHERE id=? LIMIT 1"
 	READ_REPORTS_UNRESOLVED          = "SELECT " + REPORT_FIELDS + " FROM " + REPORT_TABLE + " WHERE resolved=0 ORDER BY order_index DESC LIMIT ?"
-	READ_REPORTS_UNRESOLVED_AFTER_ID = "SELECT " + REPORT_FIELDS + " FROM " + REPORT_TABLE + " WHERE resolved=0 AND order_index>(" + READ_INDEX_OF_REPORT + ") ORDER BY order_index DESC LIMIT ?"
+	READ_REPORTS_UNRESOLVED_AFTER_ID = "SELECT " + REPORT_FIELDS + " FROM " + REPORT_TABLE + " WHERE resolved=0 AND order_index<(" + READ_INDEX_OF_REPORT + ") ORDER BY order_index DESC LIMIT ?"
 
 	WRITE_SECRET_OF_ID  = "REPLACE INTO " + SECRET_TABLE + " (id, secret) VALUES (?, ?)"
 	READ_SECRET_OF_ID   = "SELECT secret FROM " + SECRET_TABLE + " WHERE id=? LIMIT 1"
