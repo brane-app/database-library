@@ -8,14 +8,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// Longest allowed mimetype is 255 ( {127}/{127} ) per RFC 4288
+// Longest allowed email is 254 per RFC 5321
+// Max CHAR size is 255
+
 var (
 	database *sqlx.DB
 	tables   map[string]string = map[string]string{
 		CONTENT_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
-			file_url VARCHAR(63) NOT NULL,
+			file_url CHAR(64) NOT NULL,
 			author CHAR(36) NOT NULL,
-			mime VARCHAR(63) NOT NULL,
+			mime CHAR(255) NOT NULL,
 			like_count BIGINT UNSIGNED NOT NULL,
 			dislike_count BIGINT UNSIGNED NOT NULL,
 			repub_count BIGINT UNSIGNED NOT NULL,
@@ -29,9 +33,9 @@ var (
 			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT`,
 		USER_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
-			email VARCHAR(63) UNIQUE NOT NULL,
-			nick VARCHAR(63) UNIQUE NOT NULL,
-			bio VARCHAR(255) NOT NULL,
+			email CHAR(254) UNIQUE NOT NULL,
+			nick CHAR(16) UNIQUE NOT NULL,
+			bio CHAR(255) NOT NULL,
 			subscriber_count BIGINT UNSIGNED NOT NULL,
 			subscription_count BIGINT UNSIGNED NOT NULL,
 			post_count BIGINT UNSIGNED NOT NULL,
@@ -51,7 +55,7 @@ var (
 			secret BINARY(128) UNIQUE`,
 		TAG_TABLE: `
 			id CHAR(36) NOT NULL,
-			tag VARCHAR(63) NOT NULL,
+			tag CHAR(64) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
 			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
 			CONSTRAINT no_dupe_tags UNIQUE(id, tag)`,
