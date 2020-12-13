@@ -26,7 +26,12 @@ func contentOK(test *testing.T, data map[string]interface{}, have monketype.Cont
 		test.Errorf("monketype.Content ID mismatch! have: %s, want: %s", have.ID, data["id"])
 	}
 
-	var tags []string = data["tags"].([]string)
+	var tags []string
+	var ok bool
+	if tags, ok = data["tags"].([]string); !ok {
+		tags = make([]string, 0)
+	}
+
 	var length = len(have.Tags)
 	if length != len(tags) {
 		test.Errorf("Tags mismatch! have: %v, want: %v", have.Tags, tags)
