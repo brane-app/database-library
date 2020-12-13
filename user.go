@@ -1,7 +1,7 @@
 package monkebase
 
 import (
-	"github.com/imonke/monketype"
+	"git.gastrodon.io/imonke/monketype"
 
 	"database/sql"
 )

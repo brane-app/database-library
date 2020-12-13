@@ -2,7 +2,7 @@ package monkebase
 
 import (
 	"github.com/google/uuid"
-	"github.com/imonke/monketype"
+	"git.gastrodon.io/imonke/monketype"
 
 	"sort"
 	"strconv"

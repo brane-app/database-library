@@ -1,8 +1,8 @@
 package monkebase
 
 import (
+	"git.gastrodon.io/imonke/monketype"
 	"github.com/google/uuid"
-	"github.com/imonke/monketype"
 
 	"testing"
 )

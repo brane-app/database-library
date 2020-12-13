@@ -1,7 +1,7 @@
 package monkebase
 
 import (
-	"github.com/imonke/monketype"
+	"git.gastrodon.io/imonke/monketype"
 	"github.com/jmoiron/sqlx"
 
 	"database/sql"
