@@ -34,14 +34,18 @@ func TestMain(main *testing.M) {
 		panic("database nil after being set!")
 	}
 
+	database.Exec("SET FOREIGN_KEY_CHECKS=OFF")
+
 	var err error
 	var table string
-	for table = range tables {
+	for _, table = range listStringReverse(tableOrdered) {
 		if _, err = database.Query("DROP TABLE IF EXISTS " + table); err != nil {
+			database.Exec("SET FOREIGN_KEY_CHECKS=ON")
 			panic(err)
 		}
 	}
 
+	database.Exec("SET FOREIGN_KEY_CHECKS=ON")
 	create()
 
 	var result int = main.Run()

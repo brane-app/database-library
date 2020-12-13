@@ -58,7 +58,8 @@ var (
 			tag CHAR(64) NOT NULL,
 			created BIGINT UNSIGNED NOT NULL,
 			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
-			CONSTRAINT no_dupe_tags UNIQUE(id, tag)`,
+			CONSTRAINT no_dupe_tags UNIQUE(id, tag),
+			CONSTRAINT content_bound_tags FOREIGN KEY (id) REFERENCES ` + CONTENT_TABLE + `(id) ON DELETE CASCADE`,
 		SUBSCRIPTION_TABLE: `
 			subscriber CHAR(36) NOT NULL,
 			subscription CHAR(36) NOT NULL,
@@ -85,6 +86,18 @@ var (
 			resolution CHAR(255) NOT NULL,
 			order_index BIGINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT`,
 	}
+
+	tableOrdered []string = []string{
+		USER_TABLE,
+		CONTENT_TABLE,
+		AUTH_TABLE,
+		TOKEN_TABLE,
+		SECRET_TABLE,
+		SUBSCRIPTION_TABLE,
+		BAN_TABLE,
+		REPORT_TABLE,
+		TAG_TABLE,
+	}
 )
 
 const (
@@ -98,6 +111,19 @@ const (
 	BAN_TABLE          = "bans"
 	REPORT_TABLE       = "reports"
 )
+
+func listStringReverse(source []string) (reversed []string) {
+	var size int = len(source)
+	reversed = make([]string, size)
+
+	var index int
+	var it string
+	for index, it = range source {
+		reversed[size-index-1] = it
+	}
+
+	return
+}
 
 /**
  * Connect to a database, given a connection string
@@ -121,9 +147,9 @@ func Connect(address string) {
 
 func create() {
 	var err error
-	var table, structure string
-	for table, structure = range tables {
-		if _, err = database.Query(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", table, structure)); err != nil {
+	var table string
+	for _, table = range tableOrdered {
+		if _, err = database.Query(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", table, tables[table])); err != nil {
 			panic(err)
 		}
 	}
