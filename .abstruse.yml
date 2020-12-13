@@ -1,7 +1,6 @@
 image: golang
 branches:
-    - master
-    - *
+    - .*
 matrix:
     - env: MONKEBASE_CONNECTION=imonke@unix(/run/mysqld/mysqld.sock)/imonke
 before_script:
