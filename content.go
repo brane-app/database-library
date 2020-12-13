@@ -16,31 +16,29 @@ import (
  * Returns error, if any
  */
 func WriteContent(content map[string]interface{}) (err error) {
+	var tags []string = make([]string, len(content["tags"].([]string)))
+	copy(tags, content["tags"].([]string))
+
 	var copied map[string]interface{} = mapCopy(content)
-
-	if err = setTags(copied["id"].(string), copied["tags"].([]string)); err != nil {
-		return
-	}
-
 	delete(copied, "tags")
 
 	var statement string
 	var values []interface{}
 	statement, values = makeSQLInsertable(CONTENT_TABLE, copied)
-	_, err = database.Exec(statement, values...)
+	if _, err = database.Exec(statement, values...); err == nil && len(tags) != 0 {
+		err = setTags(copied["id"].(string), tags)
+	}
+
 	return
 }
 
 /**
  * Delete some content of id `ID`
- * Uses 2 queries
+ * Uses 1 querie
  * 		delete content:		DELETE FROM CONTENT_TABLE WHERE id=ID LIMIT 1
- * 		queries from: 		dropTags
  */
 func DeleteContent(ID string) (err error) {
-	if _, err = database.Exec(DELETE_CONTENT_ID, ID); err == nil {
-		err = dropTags(ID)
-	}
+	_, err = database.Exec(DELETE_CONTENT_ID, ID)
 	return
 }
 
@@ -181,24 +179,13 @@ func getManyTags(IDs []string) (tags map[string][]string, err error) {
  * Or one if there are no tags
  */
 func setTags(ID string, tags []string) (err error) {
+	if _, err = database.Exec(DELETE_TAGS_OF_ID, ID); err != nil || len(tags) == 0 {
+		return
+	}
+
 	var length int = len(tags)
-	if length < 1 {
-		err = dropTags(ID)
-		return
-	}
-
-	var paramString string = "(" + manyParamString("?", len(tags)) + ")"
-	var faces []interface{} = append(
-		[]interface{}{ID},
-		interfaceStrings(tags...)...,
-	)
-	if _, err = database.Exec(DELETE_STALE_TAGS_OF_ID+paramString, faces...); err != nil {
-		return
-	}
-
-	var now int64 = time.Now().Unix()
 	var insertable []interface{} = make([]interface{}, length*3)
-
+	var now int64 = time.Now().Unix()
 	var index int = 0
 	for index < length {
 		insertable[index*3] = ID
@@ -207,16 +194,7 @@ func setTags(ID string, tags []string) (err error) {
 		index++
 	}
 
-	paramString = manyParamString("(?, ?, ?)", length)
+	var paramString string = manyParamString("(?, ?, ?)", length)
 	_, err = database.Exec(WRITE_TAGS_OF_MANY_ID+paramString, insertable...)
-	return
-}
-
-/**
- * Deletes all of the tags for some post
- * Done in one query
- */
-func dropTags(ID string) (err error) {
-	_, err = database.Exec(DELETE_TAGS_OF_ID, ID)
 	return
 }
