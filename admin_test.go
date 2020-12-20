@@ -139,6 +139,34 @@ func Test_ReadBansOfUser(test *testing.T) {
 	}
 }
 
+func Test_ReadBansOfUser_extraBuffer(test *testing.T) {
+	EmptyTable(BAN_TABLE)
+	var banned string = uuid.New().String()
+	var population, index int = 10, 0
+	for population != index {
+		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		WriteBan(monketype.NewBan(uuid.New().String(), banned, "", 0, true).Map())
+		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		index++
+	}
+
+	var count = 20
+	var bans []monketype.Ban
+	var size int
+	var err error
+	if bans, size, err = ReadBansOfUser(banned, "", count); err != nil {
+		test.Fatal(err)
+	}
+
+	if size != population {
+		test.Errorf("size is different than population, %d != %d", size, population)
+	}
+
+	if len(bans) != size {
+		test.Errorf("incorrect bans length, %d != %d", len(bans), size)
+	}
+}
+
 func Test_ReadBansOfUser_after(test *testing.T) {
 	EmptyTable(BAN_TABLE)
 	var banned string = uuid.New().String()

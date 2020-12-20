@@ -59,6 +59,7 @@ func ReadBansOfUser(ID, before string, count int) (bans []monketype.Ban, size in
 		size++
 	}
 
+	bans = bans[:size]
 	return
 }
 
