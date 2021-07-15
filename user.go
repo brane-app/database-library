@@ -17,7 +17,7 @@ func WriteUser(user map[string]interface{}) (err error) {
 	var values []interface{}
 	statement, values = makeSQLInsertable(USER_TABLE, user)
 
-	_, err = database.Query(statement, values...)
+	_, err = database_handle.Query(statement, values...)
 	return
 }
 
@@ -27,12 +27,12 @@ func WriteUser(user map[string]interface{}) (err error) {
  * 		delete user: 	DELETE FROM USER_TABLE WHERE id=ID LIMIT 1
  */
 func DeleteUser(ID string) (err error) {
-	_, err = database.Exec(DELETE_USER_OF_ID, ID)
+	_, err = database_handle.Exec(DELETE_USER_OF_ID, ID)
 	return
 }
 
 func readSingleUserKey(statement, query string) (user types.User, exists bool, err error) {
-	if err = database.QueryRowx(statement, query).StructScan(&user); err != nil {
+	if err = database_handle.QueryRowx(statement, query).StructScan(&user); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
@@ -82,13 +82,13 @@ func ReadSingleUserNick(nick string) (user types.User, exists bool, err error) {
  * 		increment: UPDATE USER_TABLE SET post_count=post_count+1 WHERE id=ID
  */
 func IncrementPostCount(ID string) (err error) {
-	_, err = database.Exec(INCREMENT_USER_POST_COUNT_OF_ID, ID)
+	_, err = database_handle.Exec(INCREMENT_USER_POST_COUNT_OF_ID, ID)
 	return
 }
 
 func IsModerator(ID string) (moderator bool, err error) {
 	var admin bool
-	if err = database.QueryRowx(READ_ANY_PRIVILEGE_OF_ID, ID).Scan(&admin, &moderator); err != nil {
+	if err = database_handle.QueryRowx(READ_ANY_PRIVILEGE_OF_ID, ID).Scan(&admin, &moderator); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
@@ -101,7 +101,7 @@ func IsModerator(ID string) (moderator bool, err error) {
 }
 
 func IsAdmin(ID string) (admin bool, err error) {
-	if err = database.QueryRowx(READ_ADMIN_OF_ID, ID).Scan(&admin); err == sql.ErrNoRows {
+	if err = database_handle.QueryRowx(READ_ADMIN_OF_ID, ID).Scan(&admin); err == sql.ErrNoRows {
 		err = nil
 	}
 
@@ -109,11 +109,11 @@ func IsAdmin(ID string) (admin bool, err error) {
 }
 
 func SetModerator(ID string, state bool) (err error) {
-	_, err = database.Exec(WRITE_MODERATOR_OF_ID, state, ID)
+	_, err = database_handle.Exec(WRITE_MODERATOR_OF_ID, state, ID)
 	return
 }
 
 func SetAdmin(ID string, state bool) (err error) {
-	_, err = database.Exec(WRITE_ADMIN_OF_ID, state, ID)
+	_, err = database_handle.Exec(WRITE_ADMIN_OF_ID, state, ID)
 	return
 }

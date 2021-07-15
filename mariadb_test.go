@@ -30,22 +30,22 @@ func mapMod(source map[string]interface{}, mods ...map[string]interface{}) (modi
 
 func TestMain(main *testing.M) {
 	Connect(CONNECTION)
-	if database == nil {
-		panic("database nil after being set!")
+	if database_handle == nil {
+		panic("database_handle nil after being set!")
 	}
 
-	database.Exec("SET FOREIGN_KEY_CHECKS=OFF")
+	database_handle.Exec("SET FOREIGN_KEY_CHECKS=OFF")
 
 	var err error
 	var table string
 	for _, table = range listStringReverse(tableOrdered) {
-		if _, err = database.Query("DROP TABLE IF EXISTS " + table); err != nil {
-			database.Exec("SET FOREIGN_KEY_CHECKS=ON")
+		if _, err = database_handle.Query("DROP TABLE IF EXISTS " + table); err != nil {
+			database_handle.Exec("SET FOREIGN_KEY_CHECKS=ON")
 			panic(err)
 		}
 	}
 
-	database.Exec("SET FOREIGN_KEY_CHECKS=ON")
+	database_handle.Exec("SET FOREIGN_KEY_CHECKS=ON")
 	create()
 
 	var result int = main.Run()
@@ -66,8 +66,8 @@ func Test_Connect_malformedAddress(test *testing.T) {
 		}
 	}(test)
 
-	var existing *sqlx.DB = database
-	defer func(existing *sqlx.DB) { database = existing }(existing)
+	var existing *sqlx.DB = database_handle
+	defer func(existing *sqlx.DB) { database_handle = existing }(existing)
 
 	Connect("foobar")
 }
@@ -79,8 +79,8 @@ func Test_Connect_unreachableAddress(test *testing.T) {
 		}
 	}(test)
 
-	var existing *sqlx.DB = database
-	defer func(existing *sqlx.DB) { database = existing }(existing)
+	var existing *sqlx.DB = database_handle
+	defer func(existing *sqlx.DB) { database_handle = existing }(existing)
 
 	Connect("foo:bar@tcp(nothing)/table")
 }

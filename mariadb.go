@@ -13,8 +13,8 @@ import (
 // Max CHAR size is 255
 
 var (
-	database *sqlx.DB
-	tables   map[string]string = map[string]string{
+	database_handle *sqlx.DB
+	tables          map[string]string = map[string]string{
 		CONTENT_TABLE: `
 			id CHAR(36) UNIQUE PRIMARY KEY NOT NULL,
 			file_url CHAR(64) NOT NULL,
@@ -133,15 +133,15 @@ func listStringReverse(source []string) (reversed []string) {
  */
 func Connect(address string) {
 	var err error
-	if database, err = sqlx.Open("mysql", address); err != nil {
+	if database_handle, err = sqlx.Open("mysql", address); err != nil {
 		panic(err)
 	}
 
-	if err = database.Ping(); err != nil {
+	if err = database_handle.Ping(); err != nil {
 		panic(err)
 	}
 
-	database.SetMaxOpenConns(150)
+	database_handle.SetMaxOpenConns(150)
 	create()
 }
 
@@ -149,13 +149,13 @@ func create() {
 	var err error
 	var table string
 	for _, table = range tableOrdered {
-		if _, err = database.Query(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", table, tables[table])); err != nil {
+		if _, err = database_handle.Query(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", table, tables[table])); err != nil {
 			panic(err)
 		}
 	}
 }
 
 func EmptyTable(table string) (err error) {
-	_, err = database.Exec("DELETE FROM " + table)
+	_, err = database_handle.Exec("DELETE FROM " + table)
 	return
 }

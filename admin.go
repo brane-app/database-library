@@ -13,7 +13,7 @@ func WriteBan(ban map[string]interface{}) (err error) {
 	var values []interface{}
 	statement, values = makeSQLInsertable(BAN_TABLE, ban)
 
-	_, err = database.Exec(statement, values...)
+	_, err = database_handle.Exec(statement, values...)
 	return
 }
 
@@ -22,7 +22,7 @@ func WriteBan(ban map[string]interface{}) (err error) {
  * Done in one query
  */
 func ReadSingleBan(ID string) (ban types.Ban, exists bool, err error) {
-	if err = database.QueryRowx(READ_BAN_OF_ID, ID).StructScan(&ban); err != nil {
+	if err = database_handle.QueryRowx(READ_BAN_OF_ID, ID).StructScan(&ban); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
@@ -41,9 +41,9 @@ func ReadSingleBan(ID string) (ban types.Ban, exists bool, err error) {
 func ReadBansOfUser(ID, before string, count int) (bans []types.Ban, size int, err error) {
 	var rows *sqlx.Rows
 	if before == "" {
-		rows, err = database.Queryx(READ_BANS_OF_USER, ID, count)
+		rows, err = database_handle.Queryx(READ_BANS_OF_USER, ID, count)
 	} else {
-		rows, err = database.Queryx(READ_BANS_OF_USER_AFTER_ID, ID, before, count)
+		rows, err = database_handle.Queryx(READ_BANS_OF_USER_AFTER_ID, ID, before, count)
 	}
 
 	if err != nil {
@@ -70,7 +70,7 @@ func ReadBansOfUser(ID, before string, count int) (bans []types.Ban, size int, e
 func IsBanned(ID string) (banned bool, err error) {
 	var count int
 	var now int64 = time.Now().Unix()
-	if err = database.QueryRowx(READ_BANS_OF_USER_COUNT, ID, ID, now).Scan(&count); err != nil {
+	if err = database_handle.QueryRowx(READ_BANS_OF_USER_COUNT, ID, ID, now).Scan(&count); err != nil {
 		return
 	}
 
@@ -87,7 +87,7 @@ func WriteReport(report map[string]interface{}) (err error) {
 	var values []interface{}
 	statement, values = makeSQLInsertable(REPORT_TABLE, report)
 
-	_, err = database.Exec(statement, values...)
+	_, err = database_handle.Exec(statement, values...)
 	return
 }
 
@@ -98,9 +98,9 @@ func WriteReport(report map[string]interface{}) (err error) {
 func ReadManyUnresolvedReport(before string, count int) (reports []types.Report, size int, err error) {
 	var rows *sqlx.Rows
 	if before == "" {
-		rows, err = database.Queryx(READ_REPORTS_UNRESOLVED, count)
+		rows, err = database_handle.Queryx(READ_REPORTS_UNRESOLVED, count)
 	} else {
-		rows, err = database.Queryx(READ_REPORTS_UNRESOLVED_AFTER_ID, before, count)
+		rows, err = database_handle.Queryx(READ_REPORTS_UNRESOLVED_AFTER_ID, before, count)
 	}
 
 	if err != nil {
@@ -125,7 +125,7 @@ func ReadManyUnresolvedReport(before string, count int) (reports []types.Report,
  * Done in one query
  */
 func ReadSingleReport(ID string) (report types.Report, exists bool, err error) {
-	if err = database.QueryRowx(READ_REPORT_OF_ID, ID).StructScan(&report); err != nil {
+	if err = database_handle.QueryRowx(READ_REPORT_OF_ID, ID).StructScan(&report); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}

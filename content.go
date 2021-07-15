@@ -25,7 +25,7 @@ func WriteContent(content map[string]interface{}) (err error) {
 	var statement string
 	var values []interface{}
 	statement, values = makeSQLInsertable(CONTENT_TABLE, copied)
-	if _, err = database.Exec(statement, values...); err == nil && len(tags) != 0 {
+	if _, err = database_handle.Exec(statement, values...); err == nil && len(tags) != 0 {
 		err = setTags(copied["id"].(string), tags)
 	}
 
@@ -38,7 +38,7 @@ func WriteContent(content map[string]interface{}) (err error) {
  * 		delete content:		DELETE FROM CONTENT_TABLE WHERE id=ID LIMIT 1
  */
 func DeleteContent(ID string) (err error) {
-	_, err = database.Exec(DELETE_CONTENT_ID, ID)
+	_, err = database_handle.Exec(DELETE_CONTENT_ID, ID)
 	return
 }
 
@@ -49,7 +49,7 @@ func DeleteContent(ID string) (err error) {
  * 		get tags:		SELECT tag FROM TAG_TABLE WHERE id=ID
  */
 func ReadSingleContent(ID string) (content types.Content, exists bool, err error) {
-	if err = database.QueryRowx(READ_CONTENT_ID, ID).StructScan(&content); err != nil {
+	if err = database_handle.QueryRowx(READ_CONTENT_ID, ID).StructScan(&content); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
 		}
@@ -72,9 +72,9 @@ func ReadSingleContent(ID string) (content types.Content, exists bool, err error
 func ReadManyContent(before string, count int) (content []types.Content, size int, err error) {
 	var rows *sqlx.Rows
 	if before == "" {
-		rows, err = database.Queryx(READ_MANY_CONTENT, count)
+		rows, err = database_handle.Queryx(READ_MANY_CONTENT, count)
 	} else {
-		rows, err = database.Queryx(READ_MANY_CONTENT_AFTER_ID, before, count)
+		rows, err = database_handle.Queryx(READ_MANY_CONTENT_AFTER_ID, before, count)
 	}
 
 	defer rows.Close()
@@ -94,9 +94,9 @@ func ReadManyContent(before string, count int) (content []types.Content, size in
 func ReadAuthorContent(ID, before string, count int) (content []types.Content, size int, err error) {
 	var rows *sqlx.Rows
 	if before == "" {
-		rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR, ID, count)
+		rows, err = database_handle.Queryx(READ_MANY_CONTENT_OF_AUTHOR, ID, count)
 	} else {
-		rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR_AFTER_ID, ID, before, count)
+		rows, err = database_handle.Queryx(READ_MANY_CONTENT_OF_AUTHOR_AFTER_ID, ID, before, count)
 	}
 
 	defer rows.Close()
@@ -115,7 +115,7 @@ func ReadAuthorContent(ID, before string, count int) (content []types.Content, s
  */
 func getTags(ID string) (tags []string, err error) {
 	var rows *sqlx.Rows
-	if rows, err = database.Queryx(READ_TAGS_OF_ID, ID); err != nil || rows == nil {
+	if rows, err = database_handle.Queryx(READ_TAGS_OF_ID, ID); err != nil || rows == nil {
 		return
 	}
 
@@ -155,7 +155,7 @@ func getManyTags(IDs []string) (tags map[string][]string, err error) {
 
 	var paramString string = "(" + manyParamString("?", len(IDs)) + ")"
 	var rows *sql.Rows
-	if rows, err = database.Query(READ_TAGS_OF_MANY_ID+paramString, interfaceStrings(IDs...)...); err != nil || rows == nil {
+	if rows, err = database_handle.Query(READ_TAGS_OF_MANY_ID+paramString, interfaceStrings(IDs...)...); err != nil || rows == nil {
 		return
 	}
 
@@ -179,7 +179,7 @@ func getManyTags(IDs []string) (tags map[string][]string, err error) {
  * Or one if there are no tags
  */
 func setTags(ID string, tags []string) (err error) {
-	if _, err = database.Exec(DELETE_TAGS_OF_ID, ID); err != nil || len(tags) == 0 {
+	if _, err = database_handle.Exec(DELETE_TAGS_OF_ID, ID); err != nil || len(tags) == 0 {
 		return
 	}
 
@@ -195,6 +195,6 @@ func setTags(ID string, tags []string) (err error) {
 	}
 
 	var paramString string = manyParamString("(?, ?, ?)", length)
-	_, err = database.Exec(WRITE_TAGS_OF_MANY_ID+paramString, insertable...)
+	_, err = database_handle.Exec(WRITE_TAGS_OF_MANY_ID+paramString, insertable...)
 	return
 }

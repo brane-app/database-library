@@ -234,7 +234,7 @@ func Test_ReadTokenStat_expired(test *testing.T) {
 	}
 
 	var statement string = "REPLACE INTO " + TOKEN_TABLE + " (id, token, created) VALUES (?, ?, ?)"
-	if _, err = database.Exec(statement, id, bytes, 1); err != nil {
+	if _, err = database_handle.Exec(statement, id, bytes, 1); err != nil {
 		test.Fatal(err)
 	}
 
