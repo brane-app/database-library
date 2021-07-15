@@ -1,7 +1,7 @@
 package monkebase
 
 import (
-	"git.gastrodon.io/imonke/monketype"
+	"github.com/brane-app/types-library"
 	"github.com/jmoiron/sqlx"
 
 	"strings"
@@ -65,9 +65,9 @@ func mapCopy(source map[string]interface{}) (copy map[string]interface{}) {
 	return
 }
 
-func scanManyContent(rows *sqlx.Rows, count int) (content []monketype.Content, size int, err error) {
+func scanManyContent(rows *sqlx.Rows, count int) (content []types.Content, size int, err error) {
 	var ids []string = make([]string, count)
-	var scanned []monketype.Content = make([]monketype.Content, count)
+	var scanned []types.Content = make([]types.Content, count)
 	size = 0
 
 	for rows.Next() {
@@ -76,7 +76,7 @@ func scanManyContent(rows *sqlx.Rows, count int) (content []monketype.Content, s
 		size++
 	}
 
-	content = make([]monketype.Content, size)
+	content = make([]types.Content, size)
 	copy(content, scanned)
 
 	var tags map[string][]string

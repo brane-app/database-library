@@ -1,14 +1,14 @@
 package monkebase
 
 import (
-	"git.gastrodon.io/imonke/monketype"
+	"github.com/brane-app/types-library"
 	"github.com/google/uuid"
 
 	"testing"
 )
 
 type banSet struct {
-	Ban  monketype.Ban
+	Ban  types.Ban
 	Want bool
 }
 
@@ -16,7 +16,7 @@ func Test_WriteBan(test *testing.T) {
 	var banner string = uuid.New().String()
 	var banned string = uuid.New().String()
 	var duration int64 = 60 * 60 * 24 * 7
-	var ban monketype.Ban = monketype.NewBan(banner, banned, "", duration, false)
+	var ban types.Ban = types.NewBan(banner, banned, "", duration, false)
 
 	var err error
 	if err = WriteBan(ban.Map()); err != nil {
@@ -26,10 +26,10 @@ func Test_WriteBan(test *testing.T) {
 
 func Test_ReadSingleBan(test *testing.T) {
 	var banned string = uuid.New().String()
-	var ban monketype.Ban = monketype.NewBan("", banned, "", 0, false)
+	var ban types.Ban = types.NewBan("", banned, "", 0, false)
 	WriteBan(ban.Map())
 
-	var fetched monketype.Ban
+	var fetched types.Ban
 	var exists bool
 	var err error
 	if fetched, exists, err = ReadSingleBan(ban.ID); err != nil {
@@ -69,19 +69,19 @@ func Test_IsBanned_OldAndForever(test *testing.T) {
 	var set banSet
 	var sets []banSet = []banSet{
 		banSet{
-			Ban:  monketype.NewBan("", uuid.New().String(), "", -100, true),
+			Ban:  types.NewBan("", uuid.New().String(), "", -100, true),
 			Want: true,
 		},
 		banSet{
-			Ban:  monketype.NewBan("", uuid.New().String(), "", -100, false),
+			Ban:  types.NewBan("", uuid.New().String(), "", -100, false),
 			Want: false,
 		},
 		banSet{
-			Ban:  monketype.NewBan("", uuid.New().String(), "", 60*60*360, false),
+			Ban:  types.NewBan("", uuid.New().String(), "", 60*60*360, false),
 			Want: true,
 		},
 		banSet{
-			Ban:  monketype.NewBan("", uuid.New().String(), "", 60*60*360, true),
+			Ban:  types.NewBan("", uuid.New().String(), "", 60*60*360, true),
 			Want: true,
 		},
 	}
@@ -109,14 +109,14 @@ func Test_ReadBansOfUser(test *testing.T) {
 	var banned string = uuid.New().String()
 	var count, index int = 20, 0
 	for count != index {
-		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
-		WriteBan(monketype.NewBan(uuid.New().String(), banned, "", 0, true).Map())
-		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		WriteBan(types.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		WriteBan(types.NewBan(uuid.New().String(), banned, "", 0, true).Map())
+		WriteBan(types.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
 		index++
 	}
 
 	count = 10
-	var bans []monketype.Ban
+	var bans []types.Ban
 	var size int
 	var err error
 	if bans, size, err = ReadBansOfUser(banned, "", count); err != nil {
@@ -131,7 +131,7 @@ func Test_ReadBansOfUser(test *testing.T) {
 		test.Errorf("size actual mismatch! have: %d, want: %d", size, len(bans))
 	}
 
-	var ban monketype.Ban
+	var ban types.Ban
 	for _, ban = range bans {
 		if ban.Banned != banned {
 			test.Errorf("Ban banned mismatch! have: %s, want: %s", ban.Banned, banned)
@@ -144,14 +144,14 @@ func Test_ReadBansOfUser_extraBuffer(test *testing.T) {
 	var banned string = uuid.New().String()
 	var population, index int = 10, 0
 	for population != index {
-		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
-		WriteBan(monketype.NewBan(uuid.New().String(), banned, "", 0, true).Map())
-		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		WriteBan(types.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		WriteBan(types.NewBan(uuid.New().String(), banned, "", 0, true).Map())
+		WriteBan(types.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
 		index++
 	}
 
 	var count = 20
-	var bans []monketype.Ban
+	var bans []types.Ban
 	var size int
 	var err error
 	if bans, size, err = ReadBansOfUser(banned, "", count); err != nil {
@@ -172,15 +172,15 @@ func Test_ReadBansOfUser_after(test *testing.T) {
 	var banned string = uuid.New().String()
 	var count, index int = 20, 0
 	for count != index {
-		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
-		WriteBan(monketype.NewBan(uuid.New().String(), banned, "", 0, true).Map())
-		WriteBan(monketype.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		WriteBan(types.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
+		WriteBan(types.NewBan(uuid.New().String(), banned, "", 0, true).Map())
+		WriteBan(types.NewBan(uuid.New().String(), uuid.New().String(), "", 0, true).Map())
 		index++
 	}
 
 	count = 10
 	var offset int = 5
-	var first, second []monketype.Ban
+	var first, second []types.Ban
 	var err error
 	if first, _, err = ReadBansOfUser(banned, "", count); err != nil {
 		test.Fatal(err)
@@ -190,7 +190,7 @@ func Test_ReadBansOfUser_after(test *testing.T) {
 		test.Fatal(err)
 	}
 
-	var single monketype.Ban
+	var single types.Ban
 	for index, single = range first[offset+1:] {
 		if single.ID != second[index].ID {
 		}
@@ -200,7 +200,7 @@ func Test_ReadBansOfUser_after(test *testing.T) {
 func Test_WriteReport(test *testing.T) {
 	var reporter string = uuid.New().String()
 	var reported string = uuid.New().String()
-	var report monketype.Report = monketype.NewReport(reporter, reported, "", "happens to be that smelly && stinky == True")
+	var report types.Report = types.NewReport(reporter, reported, "", "happens to be that smelly && stinky == True")
 
 	var err error
 	if err = WriteReport(report.Map()); err != nil {
@@ -220,10 +220,10 @@ func Test_WriteReport(test *testing.T) {
 func Test_ReadReport(test *testing.T) {
 	var reporter string = uuid.New().String()
 	var reported string = uuid.New().String()
-	var report monketype.Report = monketype.NewReport(reporter, reported, "", "Called me the J word (javascript developer)")
+	var report types.Report = types.NewReport(reporter, reported, "", "Called me the J word (javascript developer)")
 	WriteReport(report.Map())
 
-	var fetched monketype.Report
+	var fetched types.Report
 	var exists bool
 	var err error
 	if fetched, exists, err = ReadSingleReport(report.ID); err != nil {
@@ -248,7 +248,7 @@ func Test_ReadReport(test *testing.T) {
 func Test_ReadReport_notExists(test *testing.T) {
 	var id string = uuid.New().String()
 
-	var fetched monketype.Report
+	var fetched types.Report
 	var exists bool
 	var err error
 	if _, exists, err = ReadSingleReport(id); err != nil {
@@ -263,23 +263,23 @@ func Test_ReadReport_notExists(test *testing.T) {
 func Test_ReadManyUnresolvedReport(test *testing.T) {
 	EmptyTable(REPORT_TABLE)
 
-	var report monketype.Report
+	var report types.Report
 	var index, limit int = 0, 20
 	for index != limit {
-		report = monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
+		report = types.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
 		report.Resolved = true
 		WriteReport(report.Map())
 
-		WriteReport(monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "").Map())
+		WriteReport(types.NewReport(uuid.New().String(), uuid.New().String(), "user", "").Map())
 
-		report = monketype.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
+		report = types.NewReport(uuid.New().String(), uuid.New().String(), "user", "")
 		report.Resolved = true
 		WriteReport(report.Map())
 		index++
 	}
 
 	var count, offset int = 10, 5
-	var first, second []monketype.Report
+	var first, second []types.Report
 	var err error
 	if first, _, err = ReadManyUnresolvedReport("", count); err != nil {
 		test.Fatal(err)
@@ -289,7 +289,7 @@ func Test_ReadManyUnresolvedReport(test *testing.T) {
 		test.Fatal(err)
 	}
 
-	var single monketype.Report
+	var single types.Report
 	for index, single = range first[offset+1:] {
 		if single.ID != second[index].ID {
 			test.Errorf("IDs not aligned! have: %s, want: %s", second[index].ID, single.ID)

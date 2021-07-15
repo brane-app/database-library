@@ -2,17 +2,17 @@ package monkebase
 
 import (
 	"github.com/google/uuid"
-	"git.gastrodon.io/imonke/monketype"
+	"github.com/brane-app/types-library"
 
 	"testing"
 )
 
 var (
-	user         monketype.User         = monketype.NewUser("imonke", "mmm, monke", "me@imonke.io")
+	user         types.User         = types.NewUser("imonke", "mmm, monke", "me@imonke.io")
 	writableUser map[string]interface{} = user.Map()
 )
 
-func userOK(test *testing.T, data map[string]interface{}, have monketype.User) {
+func userOK(test *testing.T, data map[string]interface{}, have types.User) {
 	if data["id"].(string) != have.ID {
 		test.Errorf("User ID mismatch! have: %s, want: %s", have.ID, data["id"])
 	}
@@ -77,7 +77,7 @@ func Test_ReadSingleUser(test *testing.T) {
 
 	WriteUser(modified)
 
-	var user monketype.User
+	var user types.User
 	var exists bool
 	var err error
 	if user, exists, err = ReadSingleUser(modified["id"].(string)); err != nil {
@@ -98,7 +98,7 @@ func Test_ReadSingleUserNick(test *testing.T) {
 
 	WriteUser(modified)
 
-	var user monketype.User
+	var user types.User
 	var exists bool
 	var err error
 	if user, exists, err = ReadSingleUserNick(modified["nick"].(string)); err != nil {
@@ -119,7 +119,7 @@ func Test_ReadSingleUserEmail(test *testing.T) {
 
 	WriteUser(modified)
 
-	var user monketype.User
+	var user types.User
 	var exists bool
 	var err error
 	if user, exists, err = ReadSingleUserEmail(modified["email"].(string)); err != nil {
@@ -136,7 +136,7 @@ func Test_ReadSingleUserEmail(test *testing.T) {
 func Test_ReadSingleUser_NotExists(test *testing.T) {
 	var id string = uuid.New().String()
 
-	var user monketype.User
+	var user types.User
 	var exists bool
 	var err error
 	if user, exists, err = ReadSingleUser(id); err != nil {
@@ -174,8 +174,8 @@ func Test_DeleteUser(test *testing.T) {
 }
 
 func Test_IncrementPostCount(test *testing.T) {
-	var writable map[string]interface{} = monketype.NewUser("increment", "", "i@monke.io").Map()
-	var unchanged map[string]interface{} = monketype.NewUser("unchanged", "", "u@monke.io").Map()
+	var writable map[string]interface{} = types.NewUser("increment", "", "i@monke.io").Map()
+	var unchanged map[string]interface{} = types.NewUser("unchanged", "", "u@monke.io").Map()
 
 	var err error
 	if err = WriteUser(writable); err != nil {
@@ -191,7 +191,7 @@ func Test_IncrementPostCount(test *testing.T) {
 		test.Fatal(err)
 	}
 
-	var fetched monketype.User
+	var fetched types.User
 	if fetched, _, err = ReadSingleUser(id); err != nil {
 		test.Fatal(err)
 	}
@@ -212,7 +212,7 @@ func Test_IncrementPostCount(test *testing.T) {
 }
 
 func Test_IsModerator(test *testing.T) {
-	var moderator monketype.User = monketype.NewUser("mod", "", "mod@imonke.io")
+	var moderator types.User = types.NewUser("mod", "", "mod@imonke.io")
 	moderator.Moderator = true
 
 	defer DeleteUser(moderator.ID)
@@ -231,7 +231,7 @@ func Test_IsModerator(test *testing.T) {
 }
 
 func Test_IsModerator_nomod(test *testing.T) {
-	var moderator monketype.User = monketype.NewUser("mod", "", "mod@imonke.io")
+	var moderator types.User = types.NewUser("mod", "", "mod@imonke.io")
 
 	defer DeleteUser(moderator.ID)
 	WriteUser(moderator.Map())
@@ -260,7 +260,7 @@ func Test_IsModerator_nobody(test *testing.T) {
 }
 
 func Test_IsAdmin(test *testing.T) {
-	var moderator monketype.User = monketype.NewUser("admin", "", "admin@imonke.io")
+	var moderator types.User = types.NewUser("admin", "", "admin@imonke.io")
 	moderator.Admin = true
 
 	defer DeleteUser(moderator.ID)
@@ -279,7 +279,7 @@ func Test_IsAdmin(test *testing.T) {
 }
 
 func Test_IsAdmin_nomod(test *testing.T) {
-	var moderator monketype.User = monketype.NewUser("admin", "", "admin@imonke.io")
+	var moderator types.User = types.NewUser("admin", "", "admin@imonke.io")
 
 	defer DeleteUser(moderator.ID)
 	WriteUser(moderator.Map())
@@ -308,7 +308,7 @@ func Test_IsAdmin_nobody(test *testing.T) {
 }
 
 func Test_SetModerator(test *testing.T) {
-	var moderator monketype.User = monketype.NewUser("mod", "", "mod@imonke.io")
+	var moderator types.User = types.NewUser("mod", "", "mod@imonke.io")
 
 	defer DeleteUser(moderator.ID)
 	var err error
@@ -343,7 +343,7 @@ func Test_SetModerator(test *testing.T) {
 }
 
 func Test_SetAdmin(test *testing.T) {
-	var admin monketype.User = monketype.NewUser("mod", "", "mod@imonke.io")
+	var admin types.User = types.NewUser("mod", "", "mod@imonke.io")
 
 	defer DeleteUser(admin.ID)
 	var err error

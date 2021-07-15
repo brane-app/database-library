@@ -2,7 +2,7 @@ package monkebase
 
 import (
 	"github.com/google/uuid"
-	"git.gastrodon.io/imonke/monketype"
+	"github.com/brane-app/types-library"
 
 	"sort"
 	"strconv"
@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	content monketype.Content = monketype.NewContent(
+	content types.Content = types.NewContent(
 		"https://gastrodon.io/file/foobar",
 		uuid.New().String(),
 		"png",
@@ -21,9 +21,9 @@ var (
 	writableContent map[string]interface{} = content.Map()
 )
 
-func contentOK(test *testing.T, data map[string]interface{}, have monketype.Content) {
+func contentOK(test *testing.T, data map[string]interface{}, have types.Content) {
 	if data["id"].(string) != have.ID {
-		test.Errorf("monketype.Content ID mismatch! have: %s, want: %s", have.ID, data["id"])
+		test.Errorf("types.Content ID mismatch! have: %s, want: %s", have.ID, data["id"])
 	}
 
 	var tags []string
@@ -184,7 +184,7 @@ func Test_ReadSingleContent(test *testing.T) {
 
 	WriteContent(modified)
 
-	var content monketype.Content = monketype.Content{}
+	var content types.Content = types.Content{}
 	var exists bool
 	var err error
 	if content, exists, err = ReadSingleContent(modified["id"].(string)); err != nil {
@@ -205,7 +205,7 @@ func Test_ReadSingleContent_notags(test *testing.T) {
 
 	WriteContent(modified)
 
-	var content monketype.Content = monketype.Content{}
+	var content types.Content = types.Content{}
 	var exists bool
 	var err error
 	if content, exists, err = ReadSingleContent(modified["id"].(string)); err != nil {
@@ -240,7 +240,7 @@ func Test_ReadSingleContent_ManyTags(test *testing.T) {
 
 	WriteContent(modified)
 
-	var content monketype.Content = monketype.Content{}
+	var content types.Content = types.Content{}
 	var exists bool
 	var err error
 	if content, exists, err = ReadSingleContent(modified["id"].(string)); err != nil {
@@ -257,7 +257,7 @@ func Test_ReadSingleContent_ManyTags(test *testing.T) {
 func Test_ReadSingleContent_NotExists(test *testing.T) {
 	var id string = uuid.New().String()
 
-	var content monketype.Content
+	var content types.Content
 	var exists bool
 	var err error
 	if content, exists, err = ReadSingleContent(id); err != nil {
@@ -274,7 +274,7 @@ func Test_ReadManyContent(test *testing.T) {
 	populate(30)
 
 	var count int = 10
-	var content []monketype.Content
+	var content []types.Content
 	var size int
 	var err error
 	if content, size, err = ReadManyContent("", count); err != nil {
@@ -294,7 +294,7 @@ func Test_ReadManyContent_order(test *testing.T) {
 	EmptyTable(CONTENT_TABLE)
 	populate(30)
 
-	var content []monketype.Content
+	var content []types.Content
 	var err error
 	if content, _, err = ReadManyContent("", 10); err != nil {
 		test.Fatal(err)
@@ -313,7 +313,7 @@ func Test_ReadManyContent_after(test *testing.T) {
 	populate(30)
 
 	var count, offset int = 10, 5
-	var first, second []monketype.Content
+	var first, second []types.Content
 	var err error
 	if first, _, err = ReadManyContent("", count); err != nil {
 		test.Fatal(err)
@@ -324,7 +324,7 @@ func Test_ReadManyContent_after(test *testing.T) {
 	}
 
 	var index int
-	var single monketype.Content
+	var single types.Content
 	for index, single = range first[offset+1:] {
 		if second[index].ID != single.ID {
 			test.Errorf("IDs not aligned! have: %s, want: %s", second[index].ID, single.ID)
@@ -336,7 +336,7 @@ func Test_ReadManyContent_afterNothing(test *testing.T) {
 	EmptyTable(CONTENT_TABLE)
 	populate(30)
 
-	var content []monketype.Content
+	var content []types.Content
 	var err error
 	if content, _, err = ReadManyContent("foobar", 10); err != nil {
 		test.Fatal(err)
@@ -362,7 +362,7 @@ func Test_ReadManyContent_emptyTags(test *testing.T) {
 	WriteContent(modified)
 
 	var sizeExpect int = 3
-	var content []monketype.Content
+	var content []types.Content
 	var size int
 	var err error
 	if content, size, err = ReadManyContent("", sizeExpect); err != nil {
@@ -373,7 +373,7 @@ func Test_ReadManyContent_emptyTags(test *testing.T) {
 		test.Errorf("size mismatch! have: %d, want: %d", size, sizeExpect)
 	}
 
-	var single monketype.Content
+	var single types.Content
 	for _, single = range content {
 		if single.Tags == nil {
 			test.Errorf("%s has nil tags!", single.ID)
@@ -389,7 +389,7 @@ func Test_ReadManyContent_withTags(test *testing.T) {
 	modified["tags"] = []string{"foo"}
 	WriteContent(modified)
 
-	var content []monketype.Content
+	var content []types.Content
 	var err error
 	if content, _, err = ReadManyContent("", 1); err != nil {
 		test.Fatal(err)
@@ -424,7 +424,7 @@ func Test_ReadAuthorContent(test *testing.T) {
 	populateAuthor(author, 20)
 
 	var count int = 5
-	var content []monketype.Content
+	var content []types.Content
 	var size int
 	var err error
 	if content, size, err = ReadAuthorContent(author, "", count); err != nil {
@@ -439,7 +439,7 @@ func Test_ReadAuthorContent(test *testing.T) {
 		test.Errorf("block size mismatch! have: %d, want: %d", len(content), size)
 	}
 
-	var single monketype.Content
+	var single types.Content
 	for _, single = range content {
 		if single.Author != author {
 			test.Errorf("author mismatch! have: %s, want: %s", single.Author, author)
@@ -454,7 +454,7 @@ func Test_ReadAuthorContent_after(test *testing.T) {
 	populateAuthor(author, 20)
 
 	var count, offset int = 10, 5
-	var first, second []monketype.Content
+	var first, second []types.Content
 	var err error
 	if first, _, err = ReadAuthorContent(author, "", count); err != nil {
 		test.Fatal(err)
@@ -465,7 +465,7 @@ func Test_ReadAuthorContent_after(test *testing.T) {
 	}
 
 	var index int
-	var single monketype.Content
+	var single types.Content
 	for index, single = range first[offset+1:] {
 		if single.ID != second[index].ID {
 			test.Errorf("IDs not aligned! have: %s, want: %s", second[index].ID, single.ID)
@@ -480,7 +480,7 @@ func Test_ReadAuthorContent_fewer(test *testing.T) {
 	var population int = 5
 	populateAuthor(author, population)
 
-	var content []monketype.Content
+	var content []types.Content
 	var size int
 	var err error
 	if content, size, err = ReadAuthorContent(author, "", 30); err != nil {
@@ -495,7 +495,7 @@ func Test_ReadAuthorContent_fewer(test *testing.T) {
 		test.Errorf("too large size! have: %d, want: %d", size, population)
 	}
 
-	var single monketype.Content
+	var single types.Content
 	for _, single = range content {
 		if single.Author != author {
 			test.Errorf("author mismatch! have: %s, want: %s", single.Author, author)

@@ -1,7 +1,7 @@
 package monkebase
 
 import (
-	"git.gastrodon.io/imonke/monketype"
+	"github.com/brane-app/types-library"
 	"github.com/jmoiron/sqlx"
 
 	"database/sql"
@@ -48,7 +48,7 @@ func DeleteContent(ID string) (err error) {
  * 		get content: 	SELECT * FROM CONTENT_TABLE WHERE id=ID LIMIT 1
  * 		get tags:		SELECT tag FROM TAG_TABLE WHERE id=ID
  */
-func ReadSingleContent(ID string) (content monketype.Content, exists bool, err error) {
+func ReadSingleContent(ID string) (content types.Content, exists bool, err error) {
 	if err = database.QueryRowx(READ_CONTENT_ID, ID).StructScan(&content); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
@@ -69,7 +69,7 @@ func ReadSingleContent(ID string) (content monketype.Content, exists bool, err e
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func ReadManyContent(before string, count int) (content []monketype.Content, size int, err error) {
+func ReadManyContent(before string, count int) (content []types.Content, size int, err error) {
 	var rows *sqlx.Rows
 	if before == "" {
 		rows, err = database.Queryx(READ_MANY_CONTENT, count)
@@ -91,7 +91,7 @@ func ReadManyContent(before string, count int) (content []monketype.Content, siz
  * 		get content: 	SELECT * FROM CONTENT_TABLE ORDER BY created DESC LIMIT offset, count
  * 		queries from: 	getManyTags
  */
-func ReadAuthorContent(ID, before string, count int) (content []monketype.Content, size int, err error) {
+func ReadAuthorContent(ID, before string, count int) (content []types.Content, size int, err error) {
 	var rows *sqlx.Rows
 	if before == "" {
 		rows, err = database.Queryx(READ_MANY_CONTENT_OF_AUTHOR, ID, count)

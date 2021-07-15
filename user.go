@@ -1,7 +1,7 @@
 package monkebase
 
 import (
-	"git.gastrodon.io/imonke/monketype"
+	"github.com/brane-app/types-library"
 
 	"database/sql"
 )
@@ -31,7 +31,7 @@ func DeleteUser(ID string) (err error) {
 	return
 }
 
-func readSingleUserKey(statement, query string) (user monketype.User, exists bool, err error) {
+func readSingleUserKey(statement, query string) (user types.User, exists bool, err error) {
 	if err = database.QueryRowx(statement, query).StructScan(&user); err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
@@ -49,7 +49,7 @@ func readSingleUserKey(statement, query string) (user monketype.User, exists boo
  * Uses 1 query
  * 		read user: 	SELECT * FROM USER_TABLE WHERE id=ID LIMIT 1
  */
-func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
+func ReadSingleUser(ID string) (user types.User, exists bool, err error) {
 	user, exists, err = readSingleUserKey(READ_USER_OF_ID, ID)
 	return
 }
@@ -60,7 +60,7 @@ func ReadSingleUser(ID string) (user monketype.User, exists bool, err error) {
  * Uses 1 query
  * 		read user: 	SELECT * FROM USER_TABLE WHERE email=email LIMIT 1
  */
-func ReadSingleUserEmail(email string) (user monketype.User, exists bool, err error) {
+func ReadSingleUserEmail(email string) (user types.User, exists bool, err error) {
 	user, exists, err = readSingleUserKey(READ_USER_OF_EMAIL, email)
 	return
 }
@@ -71,7 +71,7 @@ func ReadSingleUserEmail(email string) (user monketype.User, exists bool, err er
  * Uses 1 query
  * 		read user: 	SELECT * FROM USER_TABLE WHERE nick=nick LIMIT 1
  */
-func ReadSingleUserNick(nick string) (user monketype.User, exists bool, err error) {
+func ReadSingleUserNick(nick string) (user types.User, exists bool, err error) {
 	user, exists, err = readSingleUserKey(READ_USER_OF_NICK, nick)
 	return
 }
