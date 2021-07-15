@@ -1,4 +1,4 @@
-module git.gastrodon.io/imonke/monkebase
+module github.com/brane-app/database-library
 
 go 1.14
 
