@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	CONNECTION string = os.Getenv("MONKEBASE_CONNECTION")
+	CONNECTION string = os.Getenv("DATABASE_CONNECTION")
 )
 
 func mapMod(source map[string]interface{}, mods ...map[string]interface{}) (modified map[string]interface{}) {
