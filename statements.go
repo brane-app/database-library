@@ -1,4 +1,4 @@
-package monkebase
+package database
 
 const (
 	CONTENT_FIELDS = `

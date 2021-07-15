@@ -1,4 +1,4 @@
-package monkebase
+package database
 
 import (
 	"testing"
