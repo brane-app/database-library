@@ -57,7 +57,7 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/auth-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
 
       - name: Trigger bans-service CI
         run: >-
@@ -66,7 +66,7 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/bans-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
 
       - name: Trigger check-service CI
         run: >-
@@ -75,7 +75,7 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/check-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
 
       - name: Trigger content-create-service CI
         run: >-
@@ -84,7 +84,7 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/content-create-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
 
       - name: Trigger content-giver-service CI
         run: >-
@@ -93,7 +93,7 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/content-giver-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
 
       - name: Trigger feed-giver-service CI
         run: >-
@@ -102,7 +102,7 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/feed-giver-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
 
       - name: Trigger report-service CI
         run: >-
@@ -111,7 +111,7 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/report-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
 
       - name: Trigger self-service CI
         run: >-
@@ -120,7 +120,7 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/self-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
 
       - name: Trigger user-create-service CI
         run: >-
@@ -129,7 +129,7 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/user-create-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
 
       - name: Trigger user-giver-service CI
         run: >-
@@ -138,4 +138,4 @@ jobs:
           -H "Content-Type: application/json"
           -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/user-giver-service/dispatches
-          '{"event_type": "build"}'
+          -d '{"event_type": "build"}'
