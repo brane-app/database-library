@@ -22,8 +22,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs:
-      - build
     steps:
       - name: Set up testing database
         uses: mirromutth/mysql-action@v1.1
