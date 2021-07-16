@@ -15,10 +15,10 @@ jobs:
         run: echo ${{ github.head_ref }}
       - name: Go version
         run: go version
-      - name: Dockerhub username exists
-        run: echo ${{ secrets.DOCKERHUB_USERNAME }} | wc -c
-      - name: Dockerhub token exists
-        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | wc -c
+      - name: Github username exists
+        run: echo ${{ secrets.GH_USERNAME }} | wc -c
+      - name: Github token exists
+        run: echo ${{ secrets.GH_TOKEN }} | wc -c
 
   test:
     runs-on: ubuntu-latest
@@ -52,80 +52,90 @@ jobs:
 
       - name: Trigger auth-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/auth-service/dispatches
           '{"event_type": "build"}'
 
       - name: Trigger bans-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/bans-service/dispatches
           '{"event_type": "build"}'
 
       - name: Trigger check-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/check-service/dispatches
           '{"event_type": "build"}'
 
       - name: Trigger content-create-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/content-create-service/dispatches
           '{"event_type": "build"}'
 
       - name: Trigger content-giver-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/content-giver-service/dispatches
           '{"event_type": "build"}'
 
       - name: Trigger feed-giver-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/feed-giver-service/dispatches
           '{"event_type": "build"}'
 
       - name: Trigger report-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/report-service/dispatches
           '{"event_type": "build"}'
 
       - name: Trigger self-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/self-service/dispatches
           '{"event_type": "build"}'
 
       - name: Trigger user-create-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/user-create-service/dispatches
           '{"event_type": "build"}'
 
       - name: Trigger user-giver-service CI
         run: >-
-          curl -XPOST "${{ secrets.GH_USERNAME }}: ${{ secrets.GH_TOKEN }}"
+          curl -XPOST
           -H "Accept: application/vnd.github.everest-preview.json"
           -H "Content-Type: application/json"
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}"
           https://api.github.com/repos/brane-app/user-giver-service/dispatches
           '{"event_type": "build"}'
