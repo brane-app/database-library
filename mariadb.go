@@ -146,9 +146,7 @@ func Connect(address string) {
 		panic(err)
 	}
 
-	if err = Health(); err != nil {
-		panic(err)
-	}
+	database_handle.SetMaxOpenConns(40)
 
 	create()
 }
