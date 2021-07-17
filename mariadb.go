@@ -126,6 +126,15 @@ func listStringReverse(source []string) (reversed []string) {
 }
 
 /**
+ * Ping the database, and return any error
+ * useful for health checks
+ */
+func Health() (err error) {
+	err = database_handle.Ping()
+	return
+}
+
+/**
  * Connect to a database, given a connection string
  * If the connection fails a ping, this function wil panic with the err
  * The conenction string should look something like
@@ -137,7 +146,7 @@ func Connect(address string) {
 		panic(err)
 	}
 
-	if err = database_handle.Ping(); err != nil {
+	if err = Health(); err != nil {
 		panic(err)
 	}
 
