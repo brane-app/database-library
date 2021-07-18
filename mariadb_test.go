@@ -46,8 +46,8 @@ func TestMain(main *testing.M) {
 	}
 
 	database_handle.Exec("SET FOREIGN_KEY_CHECKS=ON")
-	create()
 	database_handle.SetMaxOpenConns(150)
+	create()
 
 	var result int = main.Run()
 
