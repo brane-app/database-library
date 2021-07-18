@@ -146,6 +146,10 @@ func Connect(address string) {
 		panic(err)
 	}
 
+	if err = Health(); err != nil {
+		panic(err)
+	}
+
 	// create()
 }
 
