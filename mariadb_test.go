@@ -46,7 +46,7 @@ func TestMain(main *testing.M) {
 	}
 
 	database_handle.Exec("SET FOREIGN_KEY_CHECKS=ON")
-	create()
+	Create()
 
 	var result int = main.Run()
 
@@ -97,7 +97,7 @@ func Test_create_badTable(test *testing.T) {
 	}(test, backup)
 
 	tables = map[string]string{"foobar": "id CHAR CHAR CHAR CHAR CHAR GAS GAS GAS DEJA VU"}
-	create()
+	Create()
 }
 
 func Test_EmptyTable(test *testing.T) {

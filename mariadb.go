@@ -149,11 +149,9 @@ func Connect(address string) {
 	if err = Health(); err != nil {
 		panic(err)
 	}
-
-	// create()
 }
 
-func create() {
+func Create() {
 	var err error
 	var table string
 	for _, table = range tableOrdered {
