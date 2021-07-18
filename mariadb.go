@@ -146,7 +146,7 @@ func Connect(address string) {
 		panic(err)
 	}
 
-	create()
+	// create()
 }
 
 func create() {
