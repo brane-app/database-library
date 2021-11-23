@@ -9,7 +9,7 @@ import (
 /**
  * Write some user `user` into USER_TABLE
  * Uses 1 query
- * 		write user: 	REPLACE INTO CONTENT_TABLE (keys...) VALUES (values...)
+ * 		write user: 	REPLACE INTO USER_TABLE (keys...) VALUES (values...)
  * Returns error, if any
  */
 func WriteUser(user map[string]interface{}) (err error) {
